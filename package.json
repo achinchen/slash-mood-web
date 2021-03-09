@@ -1,6 +1,5 @@
 {
-  "name": "moodo-web",
-  "version": "0.1.0",
+  "name": "slash-mood-web",
   "private": true,
   "scripts": {
     "dev": "next dev",
