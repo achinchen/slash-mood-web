@@ -1,6 +1,5 @@
-import Head from 'next/head'
-import styled from '@emotion/styled'
-
+import Head from 'next/head';
+import styled from '@emotion/styled';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -11,29 +10,25 @@ const Container = styled.div`
   align-items: center;
 `;
 
-
-function Home():  JSX.Element {
+function Home(): JSX.Element {
   return (
     <Container>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main>QQ</main>
-
       <footer>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by
         </a>
       </footer>
     </Container>
-  )
-};
-
+  );
+}
 
 export default Home;
