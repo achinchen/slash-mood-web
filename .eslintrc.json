@@ -1,0 +1,3 @@
+{
+  "extends": "@achinchen/eslint-config/typescript"
+}
