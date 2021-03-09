@@ -12,7 +12,7 @@ const Container = styled.div`
 `;
 
 
-export default function Home() {
+function Home():  JSX.Element {
   return (
     <Container>
       <Head>
@@ -33,4 +33,7 @@ export default function Home() {
       </footer>
     </Container>
   )
-}
+};
+
+
+export default Home;
