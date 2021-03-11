@@ -17,7 +17,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "typeRoots": ["../node_modules/@types"]
+    "typeRoots": ["node_modules/@types", "types"],
+    "baseUrl": ".",
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx"]
