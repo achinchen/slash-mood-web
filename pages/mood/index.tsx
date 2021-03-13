@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import styled from '@emotion/styled';
-import MoodCards from 'components/MoodCards';
+import MoodCards from 'components/mood/MoodCards';
 import { Category } from 'types/mood';
 import { MOOD } from 'constants/mood';
 

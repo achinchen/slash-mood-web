@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import styled from '@emotion/styled';
+import media from 'styles/media';
 import { CATEGORIES } from 'constants/mood';
 import { Mood, Category } from 'types/mood';
 
@@ -8,15 +9,21 @@ const Main = styled.main`
   gap: 16px;
   grid-template-columns: 1fr;
 
-  @media screen and (min-width: 600px) {
+  ${media(
+    'tablet',
+    `
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
-  }
+    `
+  )}
 
-  @media screen and (min-width: 900px) {
+  ${media(
+    'landscape',
+    `
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-  }
+    `
+  )}
 `;
 
 const Section = styled.section`
