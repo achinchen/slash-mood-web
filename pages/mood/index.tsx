@@ -1,61 +1,8 @@
 import Head from 'next/head';
-import styled from '@emotion/styled';
-import MoodCards from 'components/mood/MoodCards';
+import MoodCards from 'components/MoodCards';
 import { Category } from 'types/mood';
 import { MOOD } from 'constants/mood';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-`;
-
-const AddButton = styled.button`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  transform: translate(-50%, -100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: #333333;
-`;
-
-const AddButtonImage = styled.img`
-  width: 28px;
-`;
-
-const ArrowButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 32px;
-  height: 32px;
-`;
-
-const ArrowButtonImage = styled.img`
-  width: 28px;
-`;
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 48px;
-`;
-
-const H1 = styled.h1`
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 400;
-  line-height: 1.8;
-`;
-
-const Footer = styled.footer`
-  margin: auto auto 20px;
-`;
+import styles from './style.module.scss';
 
 const MONTHS = [
   'Jan',
@@ -88,33 +35,39 @@ function Mood(): JSX.Element {
   const year = new Date().getFullYear();
 
   return (
-    <Container>
+    <div className={styles.container}>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header>
-        <ArrowButton>
-          <ArrowButtonImage
+      <header className={styles.header}>
+        <button className={styles.arrowButton}>
+          <img
+            className={styles.arrowButtonIcon}
             src="/images/icon/arrow-left.svg"
             alt="選擇前一個月"
           />
-        </ArrowButton>
-        <H1>
+        </button>
+        <h1 className={styles.title}>
           {MONTHS[month]}, {year}
-        </H1>
-        <ArrowButton>
-          <ArrowButtonImage
+        </h1>
+        <button className={styles.arrowButton}>
+          <img
+            className={styles.arrowButtonIcon}
             src="/images/icon/arrow-right.svg"
             alt="選擇前一個月"
           />
-        </ArrowButton>
-      </Header>
+        </button>
+      </header>
       <MoodCards moodList={moock} />
-      <AddButton>
-        <AddButtonImage src="/images/icon/plus.svg" alt="增加心情紀錄" />
-      </AddButton>
-      <Footer>
+      <button className={styles.addButton}>
+        <img
+          className={styles.addButtonIcon}
+          src="/images/icon/plus.svg"
+          alt="增加心情紀錄"
+        />
+      </button>
+      <footer className={styles.footer}>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
@@ -122,8 +75,8 @@ function Mood(): JSX.Element {
         >
           Powered by @achin
         </a>
-      </Footer>
-    </Container>
+      </footer>
+    </div>
   );
 }
 

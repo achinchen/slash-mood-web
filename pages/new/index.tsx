@@ -1,86 +1,63 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import styled from '@emotion/styled';
-// import { Category } from 'types/mood';
+import type { Mood } from 'types/mood';
 import { MOODS } from 'constants/mood';
+import Button from 'components/Button';
+import styles from './style.module.scss';
 
-const Header = styled.header`
-  position: relative;
-  margin: 24px 0;
-`;
-
-const H1 = styled.h1`
-  margin: 24px 0 0;
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 400;
-  line-height: 1.8;
-`;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: -12px;
-  left: -12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 36px;
-  height: 36px;
-`;
-
-const CloseIcon = styled.img`
-  width: 20px;
-`;
-
-const Main = styled.main`
-  position: relative;
-`;
-
-const MoodButton = styled.button`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 84px;
-  height: 84px;
-  // data-mood
-`;
-
-const MoodIcon = styled.img`
-  width: 76px;
-`;
-
-function Mood(): JSX.Element {
-  const [currentMood, setCurrentMood] = useState();
+function CreateMood(): JSX.Element {
+  const [currentMood, setCurrentMood] = useState<Mood>();
   const [step, setCurrentStep] = useState(0);
 
+  const moodLabel = currentMood ? MOODS[currentMood] : '';
+
+  const nextStep = () => setCurrentStep((step) => step + 1);
+
+  const selectCurrentMood = (mood: Mood | undefined) => () =>
+    setCurrentMood(mood);
+
   return (
-    <Container>
+    <div className={styles.container}>
       <Head>
         <title>Add Mood Log</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header>
-        <CloseButton>
-          <CloseIcon src="/images/icon/close.svg" alt="關閉" />
-        </CloseButton>
-        <H1>你的心情是 {currentMood || '______'}</H1>
-      </Header>
-      <Main>
+      <header className={styles.header}>
+        <button className={styles.closeButton}>
+          <img
+            className={styles.closeButtonIcon}
+            src="/images/icon/close.svg"
+            alt="關閉"
+          />
+        </button>
+        <h1 className={styles.title}>
+          你的心情是{' '}
+          <span className={styles.titleLabel} aria-label={moodLabel} />
+        </h1>
+      </header>
+      <main className={styles.main}>
         {Object.entries(MOODS).map(([mood, text]) => (
-          <MoodButton key={mood} data-mood={mood}>
-            <MoodIcon src={`/images/mood/${mood}.svg`} alt={`${text}的心情`} />
-          </MoodButton>
+          <button
+            key={mood}
+            className={styles.moodButton}
+            data-mood={mood}
+            onClick={selectCurrentMood(mood as Mood)}
+          >
+            <img
+              className={styles.moodButtonIcon}
+              src={`/images/mood/${mood}.svg`}
+              alt={`${text}的心情`}
+            />
+          </button>
         ))}
-      </Main>
-    </Container>
+      </main>
+      <footer className={styles.bottom}>
+        <Button disabled={!!currentMood} onClick={nextStep}>
+          下一步
+        </Button>
+      </footer>
+    </div>
   );
 }
 
-export default Mood;
+export default CreateMood;
