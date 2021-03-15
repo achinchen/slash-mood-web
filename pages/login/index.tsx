@@ -1,27 +1,15 @@
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import cx from 'clsx';
 import Button from 'components/Button';
+import TextInput from 'components/TextInput';
 import styles from './style.module.scss';
 
 function Login(): JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [focusField, setFocusField] = useState<
-    'email' | 'password' | undefined
-  >('password');
+
   const onClose = () => window.location.assign('somewhere');
-
-  const onEmail = (event: ChangeEvent<HTMLInputElement>) =>
-    setEmail(event.target.value);
-
-  const onPassword = (event: ChangeEvent<HTMLInputElement>) =>
-    setPassword(event.target.value);
-
-  const focusEmail = () => setFocusField('email');
-  const focusPassword = () => setFocusField('password');
-  const onBlur = () => setFocusField(undefined);
 
   return (
     <div className={styles.container}>
@@ -45,48 +33,25 @@ function Login(): JSX.Element {
           <img className={styles.logo} src="/logo.png" alt="slash mood logo" />
         </header>
         <form className={styles.form}>
-          <label className={styles.formField}>
-            <span
-              className={cx(styles.formFieldLabel, {
-                [styles.focus]: focusField === 'email'
-              })}
-            >
-              Email
-            </span>
-            {/* eslint-disable-next-line jsx-a11y/autocomplete-valid */}
-            <input
-              className={styles.formFieldInput}
-              type="email"
-              value={email}
-              onChange={onEmail}
-              onFocus={focusEmail}
-              onBlur={onBlur}
-              inputMode="email"
-              name="current-email"
-              placeholder=" "
-              autoComplete="current-email"
-            />
-          </label>
-          <label className={styles.formField}>
-            <span
-              className={cx(styles.formFieldLabel, {
-                [styles.focus]: focusField === 'password'
-              })}
-            >
-              Password
-            </span>
-            <input
-              className={styles.formFieldInput}
-              type="password"
-              value={password}
-              onChange={onPassword}
-              onFocus={focusPassword}
-              onBlur={onBlur}
-              placeholder=" "
-              name="current-password"
-              autoComplete="current-password"
-            />
-          </label>
+          <TextInput
+            className={styles.formField}
+            value={email}
+            onValueChange={setEmail}
+            label="Email"
+            type="email"
+            inputMode="email"
+            name="current-email"
+            autoComplete="current-email"
+          />
+          <TextInput
+            className={styles.formField}
+            value={password}
+            onValueChange={setPassword}
+            label="Password"
+            type="password"
+            name="current-password"
+            autoComplete="current-password"
+          />
         </form>
         <footer className={styles.bottom}>
           <Button color="dark" fullwidth>
@@ -97,7 +62,7 @@ function Login(): JSX.Element {
             <a className={styles.forgotPassword}>忘記密碼嗎？</a>
           </Link>
 
-          <div className={styles.signupReminder}>
+          <div className={styles.reminder}>
             還沒有帳號？
             <Link href="/signup">註冊</Link>
           </div>
