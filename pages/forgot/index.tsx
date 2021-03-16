@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
+import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
 import styles from './style.module.scss';
@@ -8,8 +8,6 @@ import styles from './style.module.scss';
 function ForgotPassword(): JSX.Element {
   const [email, setEmail] = useState('');
   const [countDown, setCountDown] = useState(-1);
-
-  const onClose = () => window.location.assign('somewhere');
 
   const onSubmit = () => {
     setCountDown(30);
@@ -22,26 +20,8 @@ function ForgotPassword(): JSX.Element {
   }, [countDown]);
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Add Mood Log</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <header className={styles.header}>
-          <button
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label="返回"
-          >
-            <img
-              className={styles.closeButtonIcon}
-              src="/images/icon/close.svg"
-              alt="返回"
-            />
-          </button>
-          <img className={styles.logo} src="/logo.png" alt="slash mood logo" />
-        </header>
+    <Layout withCloseButton>
+      <Fragment>
         <form className={styles.form}>
           <TextInput
             className={styles.formField}
@@ -69,8 +49,8 @@ function ForgotPassword(): JSX.Element {
             <Link href="/login">返回登入</Link>
           </div>
         </footer>
-      </main>
-    </div>
+      </Fragment>
+    </Layout>
   );
 }
 

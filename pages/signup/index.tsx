@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
+import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
 import styles from './style.module.scss';
@@ -15,8 +16,6 @@ function SignUp(): JSX.Element {
   );
   const [recaptcha, setRecaptcha] = useState('');
 
-  const onClose = () => window.location.assign('somewhere');
-
   useEffect(() => {
     console.log(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
     window['onLoadRecaptcha'] = () => {
@@ -29,34 +28,19 @@ function SignUp(): JSX.Element {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Add Mood Log</title>
-        <link rel="icon" href="/favicon.ico" />
-        {finishedRecaptchaCallback && (
-          <script
-            type="text/javascript"
-            src={`https://www.google.com/recaptcha/api.js?onload=onLoadRecaptcha&render=explicit`}
-            async
-            defer
-          />
-        )}
-      </Head>
-      <main>
-        <header className={styles.header}>
-          <button
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label="返回"
-          >
-            <img
-              className={styles.closeButtonIcon}
-              src="/images/icon/close.svg"
-              alt="返回"
+    <Layout withCloseButton>
+      <Fragment>
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+          {finishedRecaptchaCallback && (
+            <script
+              type="text/javascript"
+              src={`https://www.google.com/recaptcha/api.js?onload=onLoadRecaptcha&render=explicit`}
+              async
+              defer
             />
-          </button>
-          <img className={styles.logo} src="/logo.png" alt="slash mood logo" />
-        </header>
+          )}
+        </Head>
         <form className={styles.form}>
           <TextInput
             className={styles.formField}
@@ -100,8 +84,8 @@ function SignUp(): JSX.Element {
             <Link href="/login">登入</Link>
           </div>
         </footer>
-      </main>
-    </div>
+      </Fragment>
+    </Layout>
   );
 }
 

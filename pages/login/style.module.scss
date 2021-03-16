@@ -1,49 +1,5 @@
 @import '~styles/common.scss';
 
-.container {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 2px solid transparent;
-
-  @include media(tablet) {
-    max-width: 400px;
-    margin: auto;
-  }
-
-  @include media(landscape) {
-    min-height: 600px;
-    border-color: #3a3a3a;
-  }
-}
-
-.header {
-  position: relative;
-  margin: 24px 0;
-  display: flex;
-  justify-content: center;
-};
-
-.closeButton {
-  position: absolute;
-  top: -12px;
-  left: -12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 36px;
-  height: 36px;
-
-  &Icon {
-    width: 20px;
-  }
-}
-
-.logo {
-  width: 276px;
-}
-
 .form {
   display: flex;
   flex-direction: column;
@@ -55,13 +11,7 @@
   }
 }
 
-.main {
-  position: relative;
-  margin: 24px 0;
-  align-self: center;
-}
-
-.bottom {
+.footer {
   margin: 64px auto 0;
   align-self: center;
   display: flex;
