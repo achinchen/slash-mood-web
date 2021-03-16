@@ -1,0 +1,15 @@
+@import '~styles/common.scss';
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom {
+  margin: 64px auto 0;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.4rem;
+}

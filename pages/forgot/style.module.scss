@@ -1,0 +1,32 @@
+@import '~styles/common.scss';
+
+
+.form {
+  display: flex;
+  flex-direction: column;
+
+  &Field {
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+}
+
+.main {
+  position: relative;
+  margin: 24px 0;
+  align-self: center;
+}
+
+.bottom {
+  margin: 64px auto 0;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.reminder {
+  margin-top: 64px;
+}

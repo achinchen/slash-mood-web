@@ -1,0 +1,253 @@
+@import '~styles/common.scss';
+
+$moods: (
+  happy: #9BDBF7,
+  speechless: #FEDEA3,
+  angry: #FAB9D0,
+  tried: #FAC696,
+  notTrouble: #74E8E8,
+  claim: #9BF7D6,
+  smile: #BAB9FB,
+  sad: #FF9999
+);
+
+
+.header {
+  position: relative;
+  margin: 24px 0;
+};
+
+.title {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.8;
+
+  &Label {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #3a3a3a;
+    transform: translateY(4px);
+
+    @each $mood, $color in $moods {
+      &[data-mood=#{$mood}] {
+        &::after {
+          color: $color;
+        }
+      } 
+    }
+
+    &::after {
+      content: attr(aria-label);
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 100%;
+      transform: translate(-50%, -75%);
+    }
+  }
+};
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.closeButton {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+
+  &Icon {
+    width: 20px;
+  }
+}
+
+.main {
+  position: relative;
+
+  margin: 24px 0;
+  align-self: center;
+  width: min(800px, 100%);
+
+  &[data-step="0"] {
+    height: 540px;
+  }
+}
+
+.moodButton {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 84px;
+  height: 84px;
+
+  @include media(tablet) {
+    width: 112px;
+    height: 112px;
+  }
+
+  &[data-mood='smile'] {
+    left: 50%;
+    top: 0;
+
+    @include media(tablet) {
+      transform: translateX(100%);
+    }
+  }
+
+  &[data-mood='sad'] {
+    left: 0;
+    top: 0;
+    transform: translate(25%, 50%);
+
+    @include media(tablet) {
+      left: 25%;
+      transform: translate(0, 25%);
+    }
+  }
+
+  &[data-mood='happy'] {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -75%);
+  }
+
+  &[data-mood='notTrouble'] {
+    left: 0;
+    top: 50%;
+    transform: translate(-25%, -100%);
+
+    @include media(tablet) {
+      transform: translateY(-100%);
+    }
+  }
+
+  &[data-mood='tried'] {
+    right: 0;
+    bottom: 50%;
+    transform: translate(25%, 50%);
+
+    @include media(tablet) {
+      transform: translate(-50%, 25%);
+    }
+  }
+
+  &[data-mood='angry'] {
+    bottom: 0;
+    right: 25%;
+    transform: translate(50%, -100%);
+  }
+
+  &[data-mood='speechless'] {
+    left: 0;
+    bottom: 0;
+    transform: translateY(-125%);
+
+    @include media(tablet) {
+      transform: translate(75%, -100%);
+    }
+  }
+
+  &[data-mood='claim'] {
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -25%);
+  }
+
+
+  &Icon {
+    width: 76px;
+
+    @include media(tablet) {
+      width: 100px;
+    }
+  }
+}
+
+.moodFigure {
+  margin: auto;
+  text-align: center;
+  font-size: 1.6rem;
+
+  &Source {
+    width: 108px;
+    margin-bottom: 12px;
+  }
+}
+
+.category {
+  &Label {
+    margin: 32px 0 24px;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.8;
+  }
+
+  &Container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+
+    @include media(tablet) {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+    }
+  }
+
+  &Item {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.6rem;
+  }
+
+  &Button {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #3a3a3a;
+    border-radius: 50%;
+
+    &Icon {
+      width: 24px;
+    }
+  }
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.6rem;
+  margin-top: 56px;
+
+  &Textarea {
+    margin-top: 24px;
+    height: 100px;
+    border: 1px solid #9CABC2;
+    border-radius: 8px;
+    resize: none;
+  }
+}
+
+.bottom {
+  margin: auto;
+  align-self: center;
+}
+
+.submitButton {
+  margin-left: 12px;
+}

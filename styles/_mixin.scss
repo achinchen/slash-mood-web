@@ -1,0 +1,9 @@
+@mixin media($device) {
+  $query: map-get($devices, $device);
+
+
+  @media screen and (min-width: #{$query + 'px'}) {
+    @content;
+  }
+}
+

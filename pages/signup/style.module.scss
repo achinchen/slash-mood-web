@@ -1,0 +1,35 @@
+@import '~styles/common.scss';
+
+.form {
+  display: flex;
+  flex-direction: column;
+
+  &Field {
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+}
+
+.recaptcha {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.bottom {
+  margin: 64px auto 0;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.serviceLicense {
+  margin-top: 16px;
+}
+
+.reminder {
+  margin-top: 64px;
+}
