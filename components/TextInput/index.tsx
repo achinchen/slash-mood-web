@@ -8,6 +8,7 @@ type Props = {
   onValueChange?: (value: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
   label?: string;
+  helperText?: string;
 } & HTMLProps<HTMLInputElement>;
 
 const TextInput: FC<Props> = ({
@@ -18,6 +19,7 @@ const TextInput: FC<Props> = ({
   placeholder = ' ',
   label,
   value,
+  helperText,
   ...props
 }) => {
   const [focus, setFocus] = useState(false);
@@ -45,13 +47,18 @@ const TextInput: FC<Props> = ({
       )}
       <input
         value={value}
-        className={styles.fieldInput}
+        className={cx(styles.fieldInput, {
+          [styles.invalid]: !!helperText
+        })}
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={handleBlur}
         placeholder={placeholder}
         {...props}
       />
+      {helperText && (
+        <span className={styles.fieldHelperText}>{helperText}</span>
+      )}
     </label>
   );
 };
