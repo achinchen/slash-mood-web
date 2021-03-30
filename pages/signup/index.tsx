@@ -17,27 +17,31 @@ function SignUp(): JSX.Element {
   );
   const [recaptcha, setRecaptcha] = useState('');
 
-  const { email, setEmail, emailHelperText, onBlurEmail } = useEmail(
-    'chin@achin.dev'
-  );
+  const {
+    email,
+    setEmail,
+    emailHelperText,
+    duplicatedEmailHelper,
+    onBlurEmail
+  } = useEmail('');
   const {
     password,
     setPassword,
     passwordHelperText,
     onBlurPassword
-  } = usePassword('Achin');
+  } = usePassword('');
   const {
     nickname,
     setNickname,
     nicknameHelperText,
     onBlurNickname
-  } = useNickname('Achin1234');
+  } = useNickname('');
 
   const passValidation = !(
     emailHelperText ||
     nicknameHelperText ||
     passwordHelperText ||
-    !recaptcha
+    recaptcha
   );
 
   const payload = useMemo(
@@ -49,7 +53,7 @@ function SignUp(): JSX.Element {
     [email, password, nickname]
   );
 
-  const { loading, error, result, requestFetch } = useFetch({
+  const { loading, error, requestFetch } = useFetch({
     method: 'POST',
     path: '/signup',
     payload
@@ -57,7 +61,10 @@ function SignUp(): JSX.Element {
 
   const onSubmit = async () => {
     await requestFetch();
-    console.log(result);
+    if (!error) return window.location.assign('/mood');
+    if (error?.message.includes('Duplicate')) duplicatedEmailHelper();
+
+    // TODO: handle other validation error;
   };
 
   useEffect(() => {
