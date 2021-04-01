@@ -22,7 +22,7 @@ function useEmail(initialValue?: string): ReturnValues {
   const onBlurEmail = useCallback((event: FocusEvent<HTMLInputElement>) => {
     const { value: email } = event.target;
     if (!email) {
-      setEmailHelperText('請需填寫 Email');
+      setEmailHelperText('請填寫 Email');
     } else if (!isEmail(email)) {
       setEmailHelperText('無效的 Email');
     } else {

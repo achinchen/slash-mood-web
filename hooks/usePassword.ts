@@ -22,7 +22,7 @@ function usePassword(initialValue?: string): ReturnValues {
         minSymbols: 0
       })
         ? ''
-        : '請填寫 8 個字元以上，至少包含 1 個小寫英文及 1 個數字'
+        : '請填寫 8 個字元以上，包含 1 個小寫英文及 1 個數字'
     );
   };
 
