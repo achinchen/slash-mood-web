@@ -73,7 +73,7 @@ $moods: (
 
 .main {
   position: relative;
-
+  padding-bottom: 40px;
   margin: 24px 0;
   align-self: center;
   width: min(800px, 100%);
@@ -206,16 +206,24 @@ $moods: (
   }
 
   &Item {
-    width: 50px;
+    width: 54px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 2px solid transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
     font-size: 1.6rem;
+
+    &.selected {
+      border-color: #3a3a3a;
+    }
   }
 
   &Button {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -241,6 +249,13 @@ $moods: (
     border-radius: 8px;
     resize: none;
   }
+}
+
+.error {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 1.2rem;
 }
 
 .bottom {

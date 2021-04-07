@@ -34,6 +34,8 @@ function Mood(): JSX.Element {
   const month = new Date().getMonth();
   const year = new Date().getFullYear();
 
+  const addMood = () => window.location.assign('/mood/create');
+
   return (
     <div className={styles.container}>
       <Head>
@@ -60,9 +62,9 @@ function Mood(): JSX.Element {
         </button>
       </header>
       <MoodCards moodList={moock} />
-      <button className={styles.addButton}>
+      <button className={styles.addMoodButton} onClick={addMood}>
         <img
-          className={styles.addButtonIcon}
+          className={styles.addMoodButtonIcon}
           src="/images/icon/plus.svg"
           alt="增加心情紀錄"
         />
