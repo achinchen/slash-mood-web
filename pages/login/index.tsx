@@ -13,7 +13,7 @@ import styles from './style.module.scss';
 function Login(): JSX.Element {
   const [fetchedError, setFetchedError] = useState('');
   const { email, setEmail, emailHelperText, onBlurEmail } = useEmail(
-    'chin@achin.tw'
+    'chin@achin.dev'
   );
 
   const {
@@ -21,7 +21,7 @@ function Login(): JSX.Element {
     setPassword,
     passwordHelperText,
     onBlurPassword
-  } = usePassword('Achin');
+  } = usePassword('achin1234');
 
   const passValidation = !(emailHelperText || passwordHelperText);
   const payload = useMemo(() => ({ email, password }), [email, password]);
@@ -86,7 +86,7 @@ function Login(): JSX.Element {
           />
         </form>
         <div className={styles.error} hidden={!isError}>
-          <Emoji emoji="🥺" ariaLabel="Some error happened!" />
+          <Emoji emoji="🥺" aria-label="Some error happened!" />
           {fetchedError}
         </div>
         <footer className={styles.footer}>
