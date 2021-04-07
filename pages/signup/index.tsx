@@ -42,7 +42,7 @@ function SignUp(): JSX.Element {
     emailHelperText ||
     nicknameHelperText ||
     passwordHelperText ||
-    recaptcha
+    !recaptcha
   );
 
   const payload = useMemo(
@@ -55,8 +55,8 @@ function SignUp(): JSX.Element {
   );
 
   const { isLoading, refetch } = useQuery(
-    'sign',
-    query('/sign', { method: 'POST', payload }),
+    'signup',
+    query('/signup', { method: 'POST', payload }),
     {
       enabled: false,
       retry: false,
@@ -68,6 +68,7 @@ function SignUp(): JSX.Element {
       onSuccess: () => window.location.assign('/mood')
     }
   );
+  console.log({ passValidation, isLoading });
 
   const onSubmit = () => refetch();
 
