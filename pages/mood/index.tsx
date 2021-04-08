@@ -1,7 +1,11 @@
 import Head from 'next/head';
+import { NextPage } from 'next';
+import { useRef, useState } from 'react';
+import { useInfiniteQuery } from 'react-query';
+import { paginationQuery } from 'utils/query';
+import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import MoodCards from 'components/MoodCards';
-import { Category } from 'types/mood';
-import { MOOD } from 'constants/mood';
+import { Record, PaginationResult } from 'types/record';
 import styles from './style.module.scss';
 
 const MONTHS = [
@@ -19,20 +23,44 @@ const MONTHS = [
   'Dec'
 ];
 
-const generateMockMood = (length: number) => {
-  return Array.from({ length }, (_, index) => ({
-    time: `${String(index + 1).padStart(2, '0')} 星期三 ${String(
-      index * 3 + Math.floor(Math.random() * 10)
-    ).padStart(2, '0')}:00`,
-    categories: ['work', 'home'] as Category[],
-    mood: MOOD[(index + Math.floor(Math.random() * 10)) % MOOD.length]
-  }));
-};
+type Props = {};
 
-const moock = generateMockMood(4);
-function Mood(): JSX.Element {
-  const month = new Date().getMonth();
-  const year = new Date().getFullYear();
+const Mood: NextPage<Props> = ({ date, initialRecord }) => {
+  const loadMoreButtonRef = useRef<HTMLDivElement>(null);
+  const [currentDate] = useState(new Date(date));
+
+  const setMonth = (direction: 'previous' | 'next') => () => {
+    currentDate.setUTCMonth(
+      currentDate.getDay() + (direction === 'next' ? 1 : -1)
+    );
+    window.location.assign(`/mood/${currentDate.toJSON()}`);
+  };
+
+  const query = paginationQuery(`/records?date=${currentDate.toJSON()}`);
+
+  const {
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    data
+  } = useInfiniteQuery<PaginationResult & { records: Record[] }, Error>(
+    `record-${currentDate.toISOString()}`,
+    query,
+    {
+      retry: 0,
+      getNextPageParam: (lastPage) => lastPage && lastPage.nextPage
+    }
+  );
+
+  useIntersectionObserver({
+    targetRef: loadMoreButtonRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage
+  });
+
+  console.log({ records: data?.pages[0].records });
 
   const addMood = () => window.location.assign('/mood/create');
 
@@ -43,7 +71,7 @@ function Mood(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.header}>
-        <button className={styles.arrowButton}>
+        <button className={styles.arrowButton} onClick={selectPreviousMonth}>
           <img
             className={styles.arrowButtonIcon}
             src="/images/icon/arrow-left.svg"
@@ -51,7 +79,7 @@ function Mood(): JSX.Element {
           />
         </button>
         <h1 className={styles.title}>
-          {MONTHS[month]}, {year}
+          {MONTHS[date.getMonth()]}, {date.getFullYear()}
         </h1>
         <button className={styles.arrowButton}>
           <img
@@ -61,7 +89,7 @@ function Mood(): JSX.Element {
           />
         </button>
       </header>
-      <MoodCards moodList={moock} />
+      {/* <MoodCards moodList={undefined} /> */}
       <button className={styles.addMoodButton} onClick={addMood}>
         <img
           className={styles.addMoodButtonIcon}
@@ -80,6 +108,6 @@ function Mood(): JSX.Element {
       </footer>
     </div>
   );
-}
+};
 
 export default Mood;
