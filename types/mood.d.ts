@@ -1,5 +1,5 @@
-import {CATEGORIES, MOOD} from 'constants/mood';
+import {CATEGORY, MOOD} from 'constants/mood';
 
-export type Category = keyof typeof CATEGORIES;
+export type Category = typeof CATEGORY[number];
 
 export type Mood = typeof MOOD[number];

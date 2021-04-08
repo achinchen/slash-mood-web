@@ -11,6 +11,16 @@
   }
 }
 
+.error {
+  font-size: 1.2rem;
+  margin: 20px 0 0 8px;
+  color: red;
+
+  &[hidden] {
+    opacity: 0;
+  }
+}
+
 .footer {
   margin: 64px auto 0;
   align-self: center;

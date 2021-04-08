@@ -1,23 +1,78 @@
-import { useState, useRef, useEffect, Fragment } from 'react';
+import { useState, useRef, useMemo, useEffect, Fragment } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useQuery } from 'react-query';
+import useEmail from 'hooks/useEmail';
+import query from 'utils/query';
 import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
 import styles from './style.module.scss';
+import usePassword from 'hooks/usePassword';
+import useNickname from 'hooks/useNickname';
 
 function SignUp(): JSX.Element {
   const recaptchaRef = useRef<HTMLDivElement>(null);
-  const [email, setEmail] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [password, setPassword] = useState('');
   const [finishedRecaptchaCallback, setFinishedRecaptchaCallback] = useState(
     false
   );
   const [recaptcha, setRecaptcha] = useState('');
 
+  const {
+    email,
+    setEmail,
+    emailHelperText,
+    duplicatedEmailHelper,
+    onBlurEmail
+  } = useEmail('');
+  const {
+    password,
+    setPassword,
+    passwordHelperText,
+    onBlurPassword
+  } = usePassword('');
+  const {
+    nickname,
+    setNickname,
+    nicknameHelperText,
+    onBlurNickname
+  } = useNickname('');
+
+  const passValidation = !(
+    emailHelperText ||
+    nicknameHelperText ||
+    passwordHelperText ||
+    !recaptcha
+  );
+
+  const payload = useMemo(
+    () => ({
+      email,
+      password,
+      nickname
+    }),
+    [email, password, nickname]
+  );
+
+  const { isLoading, refetch } = useQuery(
+    'signup',
+    query('/signup', { method: 'POST', payload }),
+    {
+      enabled: false,
+      retry: false,
+      onError: ({ status }) => {
+        if (status === 409) duplicatedEmailHelper();
+
+        // TODO: handle other validation error;
+      },
+      onSuccess: () => window.location.assign('/mood')
+    }
+  );
+  console.log({ passValidation, isLoading });
+
+  const onSubmit = () => refetch();
+
   useEffect(() => {
-    console.log(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
     window['onLoadRecaptcha'] = () => {
       window.grecaptcha.render(recaptchaRef.current!, {
         sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
@@ -46,6 +101,8 @@ function SignUp(): JSX.Element {
             className={styles.formField}
             value={email}
             onValueChange={setEmail}
+            onBlur={onBlurEmail}
+            helperText={emailHelperText}
             label="Email"
             type="email"
             inputMode="email"
@@ -55,7 +112,9 @@ function SignUp(): JSX.Element {
           <TextInput
             className={styles.formField}
             value={nickname}
+            helperText={nicknameHelperText}
             onValueChange={setNickname}
+            onBlur={onBlurNickname}
             label="暱稱"
             name="current-name"
             autoComplete="current-name"
@@ -63,7 +122,9 @@ function SignUp(): JSX.Element {
           <TextInput
             className={styles.formField}
             value={password}
+            helperText={passwordHelperText}
             onValueChange={setPassword}
+            onBlur={onBlurPassword}
             label="Password"
             type="password"
             name="current-password"
@@ -72,7 +133,12 @@ function SignUp(): JSX.Element {
         </form>
         <div className={styles.recaptcha} ref={recaptchaRef} />
         <footer className={styles.bottom}>
-          <Button color="dark" fullwidth>
+          <Button
+            color="dark"
+            fullwidth
+            onClick={onSubmit}
+            disabled={!passValidation || isLoading}
+          >
             註冊
           </Button>
           <div className={styles.serviceLicense}>

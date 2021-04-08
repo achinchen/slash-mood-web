@@ -24,7 +24,17 @@
     height: 100%;
     border: 2px solid #3a3a3a;
     border-radius: 4px;
-    padding: 12px 8px 8px 12px;
+    padding: 20px 8px 4px 14px;
+
+    &.invalid {
+      border-color: red;
+    }
+  }
+
+  &HelperText {
+    font-size: 1.2rem;
+    margin: 4px 0 0 4px;
+    color: red;
   }
 }
 
