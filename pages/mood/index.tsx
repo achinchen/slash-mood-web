@@ -43,8 +43,7 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
     isFetching,
     isFetchingNextPage,
     hasNextPage,
-    fetchNextPage,
-    data
+    fetchNextPage
   } = useInfiniteQuery<PaginationResult & { records: Record[] }, Error>(
     `record-${currentDate.toISOString()}`,
     query,
@@ -60,8 +59,6 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
     enabled: hasNextPage && !isFetchingNextPage
   });
 
-  console.log({ records: data?.pages[0].records });
-
   const addMood = () => window.location.assign('/mood/create');
 
   return (
@@ -71,7 +68,7 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.header}>
-        <button className={styles.arrowButton} onClick={selectPreviousMonth}>
+        <button className={styles.arrowButton} onClick={setMonth('previous')}>
           <img
             className={styles.arrowButtonIcon}
             src="/images/icon/arrow-left.svg"
@@ -81,7 +78,7 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
         <h1 className={styles.title}>
           {MONTHS[date.getMonth()]}, {date.getFullYear()}
         </h1>
-        <button className={styles.arrowButton}>
+        <button className={styles.arrowButton} onClick={setMonth('next')}>
           <img
             className={styles.arrowButtonIcon}
             src="/images/icon/arrow-right.svg"

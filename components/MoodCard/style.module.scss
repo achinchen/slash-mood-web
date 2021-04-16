@@ -1,0 +1,104 @@
+@import '~styles/common.scss';
+
+$categories: (
+  work: #9BDBF7,
+  home: #FEDEA3,
+  social: #FAB9D0,
+  ability: #FAC696,
+  mentality: #74E8E8,
+  body: #9BF7D6,
+  financial: #BAB9FB,
+  achievement: #FF9999
+);
+
+@keyframes loading {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.card {
+  display: inline-flex;
+  align-content: center;
+  border: 1.6px solid #3a3a3a;
+  border-radius: 20px;
+  padding: 12px;
+  height: 800px;
+  // height: 92px;
+
+  &::before {
+    content: '';
+  }
+
+  &.placeholder {
+    position: relative;
+
+    &:nth-child(3n) {
+      display: none;
+
+      @include media(landscape) {
+        display: inline-flex;
+      }
+    }
+
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      animation: loading 1s infinite;
+      background: linear-gradient(to right, rgba(white, 0) 0%, rgba(white, 0.35) 12%, rgba(white, 0) 20%) 12% 12%;
+    }
+  }
+}
+
+.mood {
+  width: 64px;
+  margin-right: 12px;  
+}
+
+.time {
+  $font-size: 1.6rem;
+
+  display: block;
+  font-size: $font-size;
+  margin-bottom: 8px;
+
+  &.placeholder {
+    height: $font-size;
+    width: 120px;
+    background-color: color(placeholder);
+  }
+}
+
+.tag {
+  $font-size: 1.2rem;
+
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: $font-size;
+  letter-space: 0.4rem;
+
+  @each $category, $color in $categories {
+    &[data-label=#{$category}] {
+      background-color: $color;
+    }
+  }
+
+  &:not(:last-child) {
+    margin-right: 4px;
+  }
+
+  &.placeholder {
+    background-color: color(placeholder);
+    height: $font-size * 1.25;
+    width: 40px;
+  }
+};

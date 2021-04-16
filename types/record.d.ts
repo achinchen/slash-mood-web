@@ -1,8 +1,9 @@
 export type Record = {
   id: number;
-  categories: number[];
+  categories: string[];
   mood: number;
   description: string;
+  createdTime: string;
 };
 
 export type PaginationResult = {
@@ -10,3 +11,4 @@ export type PaginationResult = {
   nextPage: null | number;
   prevPage: null | number;
 };
+
