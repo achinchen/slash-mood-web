@@ -1,3 +1,5 @@
+@import '~styles/common.scss';
+
 .container {
   display: flex;
   flex-direction: column;
@@ -16,6 +18,23 @@
   font-weight: 400;
   line-height: 1.8;
 }
+
+.main {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+
+  @include media(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  @include media(landscape) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
 
 .footer {
   margin: auto auto 20px;

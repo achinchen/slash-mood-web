@@ -2,7 +2,8 @@ import { useState, ChangeEvent, useMemo } from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
 import cx from 'clsx';
-import { MOODS, MOOD, CATEGORIES } from 'constants/mood';
+import { MOODS_MAP, MOODS, CATEGORIES_MAP, CATEGORIES } from 'constants/mood';
+import { Category, Mood } from 'types/mood';
 import query from 'utils/query';
 import Button from 'components/Button';
 import Emoji from 'components/Emoji';
@@ -10,34 +11,36 @@ import styles from './style.module.scss';
 
 function CreateMood(): JSX.Element {
   const [step, setStep] = useState(0);
-  const [moodIndex, setMoodIndex] = useState<number>();
-  const [categories, setCategories] = useState<number[]>([]);
+  const [mood, setMood] = useState<Mood>();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [description, setDescription] = useState('');
   const [fetchedError, setFetchedError] = useState('發生不明問題，請重試看看');
 
   const payload = useMemo(
     () => ({
-      mood: moodIndex,
-      categories: categories,
+      mood,
+      categories,
       description
     }),
-    [moodIndex, categories, description]
+    [mood, categories, description]
   );
 
-  const moodLabel = moodIndex !== undefined ? MOODS[MOOD[moodIndex]] : ' ';
+  const moodLabel = mood ? MOODS_MAP[mood] : ' ';
 
   const nextStep = () => setStep(step + 1);
   const previousStep = () => setStep(step - 1);
 
   const onClose = () => (step ? previousStep() : window.history.go(-1));
 
-  const selectMood = (mood: number | undefined) => () => setMoodIndex(mood);
+  const selectMood = (mood: Mood) => () => setMood(mood);
 
-  const selectCategory = (index: number) => () => {
+  const selectCategory = (category: Category) => () => {
     setCategories((categories) => {
-      if (categories.includes(index))
-        return categories.filter((i) => i !== index);
-      return [...categories, index];
+      if (categories.includes(category))
+        return categories.filter(
+          (currentCategory) => currentCategory !== category
+        );
+      return [...categories, category];
     });
   };
 
@@ -82,34 +85,29 @@ function CreateMood(): JSX.Element {
               你的心情是{' '}
               <span
                 className={styles.titleLabel}
-                data-mood={MOOD[moodIndex as number]}
+                data-mood={mood}
                 aria-label={moodLabel}
               />
             </h1>
           </header>
           <main className={styles.main} data-step="0">
-            {Object.entries(MOODS).map(([mood, text], index) => (
+            {MOODS.map((mood) => (
               <button
                 key={mood}
                 className={styles.moodButton}
                 data-mood={mood}
-                onClick={selectMood(index)}
+                onClick={selectMood(mood)}
               >
                 <img
                   className={styles.moodButtonIcon}
                   src={`/images/mood/${mood}.svg`}
-                  alt={`${text}的心情`}
+                  alt={`${MOODS_MAP[mood]}的心情`}
                 />
               </button>
             ))}
           </main>
           <footer className={styles.bottom}>
-            <Button
-              color="light"
-              size="md"
-              disabled={!moodIndex}
-              onClick={nextStep}
-            >
+            <Button color="light" size="md" disabled={!mood} onClick={nextStep}>
               下一步
             </Button>
           </footer>
@@ -128,11 +126,11 @@ function CreateMood(): JSX.Element {
             <figure className={styles.moodFigure}>
               <img
                 className={styles.moodFigureSource}
-                src={`/images/mood/${MOOD[moodIndex as number]}.svg`}
+                src={`/images/mood/${mood}.svg`}
                 alt={moodLabel}
               />
               <figcaption>
-                {moodLabel} {MOOD[moodIndex as number]}
+                {moodLabel} {mood}
               </figcaption>
             </figure>
           </header>
@@ -141,22 +139,22 @@ function CreateMood(): JSX.Element {
               是什麼讓你「{moodLabel}」？
             </h1>
             <section className={styles.categoryContainer}>
-              {Object.entries(CATEGORIES).map(([category, label], index) => (
+              {CATEGORIES.map((category) => (
                 <button
                   key={category}
                   className={cx(styles.categoryItem, {
-                    [styles.selected]: categories.includes(index)
+                    [styles.selected]: categories.includes(category)
                   })}
-                  onClick={selectCategory(index)}
+                  onClick={selectCategory(category)}
                 >
                   <span className={styles.categoryButton}>
                     <img
                       className={styles.categoryButtonIcon}
                       src={`/images/category/${category}.svg`}
-                      alt={label}
+                      alt={CATEGORIES_MAP[category]}
                     />
                   </span>
-                  {label}
+                  {CATEGORIES_MAP[category]}
                 </button>
               ))}
             </section>
@@ -187,7 +185,7 @@ function CreateMood(): JSX.Element {
               className={styles.submitButton}
               size="sm"
               color="dark"
-              disabled={moodIndex === undefined && isLoading}
+              disabled={mood && isLoading}
               onClick={onSubmit}
             >
               完成

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import cx from 'clsx';
-import { CATEGORIES, MOOD, CATEGORY } from 'constants/mood';
+import { CATEGORIES, MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
@@ -10,8 +10,8 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => (
   <section key={id} className={styles.card}>
     <img
       className={styles.mood}
-      src={`/images/mood/${MOOD[mood]}.svg`}
-      alt={`${mood}`}
+      src={`/images/mood/${mood}.svg`}
+      alt={`${MOODS_MAP[mood]}`}
     />
     <p>
       <time className={styles.time}>
@@ -21,9 +21,9 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => (
         <span
           className={styles.tag}
           key={`${id}-${category}`}
-          data-label={CATEGORY[Number(category)]}
+          data-label={category}
         >
-          {CATEGORIES[CATEGORY[Number(category)]]}
+          {CATEGORIES_MAP[category]}
         </span>
       ))}
     </p>

@@ -1,12 +1,14 @@
+import { useRef, Fragment } from 'react';
 import Head from 'next/head';
-import { NextPage } from 'next';
-import { useRef, useState } from 'react';
+import { NextPage, NextPageContext } from 'next';
 import { useInfiniteQuery } from 'react-query';
-import { paginationQuery } from 'utils/query';
+import { paginationQuery, getInitialPaginationQuery } from 'utils/query';
 import useIntersectionObserver from 'hooks/useIntersectionObserver';
-import MoodCards from 'components/MoodCards';
 import { Record, PaginationResult } from 'types/record';
+import MoodCard from 'components/MoodCard';
 import styles from './style.module.scss';
+import { useState } from 'react';
+import { MoodCardPlaceholder } from 'components/MoodCard';
 
 const MONTHS = [
   'Jan',
@@ -23,22 +25,25 @@ const MONTHS = [
   'Dec'
 ];
 
-type Props = {};
+type InitialRecord = { records: Record[] } & PaginationResult;
+type Props = {
+  initialRecord: InitialRecord;
+  date: Date;
+};
 
 const Mood: NextPage<Props> = ({ date, initialRecord }) => {
-  const loadMoreButtonRef = useRef<HTMLDivElement>(null);
   const [currentDate] = useState(new Date(date));
-
-  const setMonth = (direction: 'previous' | 'next') => () => {
-    currentDate.setUTCMonth(
-      currentDate.getDay() + (direction === 'next' ? 1 : -1)
-    );
-    window.location.assign(`/mood/${currentDate.toJSON()}`);
-  };
-
   const query = paginationQuery(`/records?date=${currentDate.toJSON()}`);
 
+  const setMonth = (direction: 'previous' | 'next') => () => {
+    date.setUTCMonth(date.getDay() + (direction === 'next' ? 1 : -1));
+    window.location.assign(`/mood/${date}`);
+  };
+
+  const loadMoreButtonRef = useRef<HTMLDivElement>(null);
+
   const {
+    data,
     isLoading,
     isFetching,
     isFetchingNextPage,
@@ -76,7 +81,7 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
           />
         </button>
         <h1 className={styles.title}>
-          {MONTHS[date.getMonth()]}, {date.getFullYear()}
+          {MONTHS[currentDate.getMonth()]}, {currentDate.getFullYear()}
         </h1>
         <button className={styles.arrowButton} onClick={setMonth('next')}>
           <img
@@ -86,7 +91,20 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
           />
         </button>
       </header>
-      {/* <MoodCards moodList={undefined} /> */}
+      <main className={styles.main}>
+        {initialRecord.records.map((record) => (
+          <MoodCard {...record} key={record.id} />
+        ))}
+        {data?.pages.map(({ page, records }) => (
+          <Fragment key={`page-${page}`}>
+            {records.map((record) => (
+              <MoodCard {...record} key={record.id} />
+            ))}
+          </Fragment>
+        ))}
+        <div ref={loadMoreButtonRef} />
+        {isFetchingNextPage && <MoodCardPlaceholder />}
+      </main>
       <button className={styles.addMoodButton} onClick={addMood}>
         <img
           className={styles.addMoodButtonIcon}
@@ -105,6 +123,18 @@ const Mood: NextPage<Props> = ({ date, initialRecord }) => {
       </footer>
     </div>
   );
+};
+
+Mood.getInitialProps = async (ctx: NextPageContext) => {
+  const dateQuery =
+    typeof ctx.query?.date === 'string' ? ctx.query?.date : '2021-04-15';
+
+  const date = new Date(dateQuery);
+  const result = await getInitialPaginationQuery(
+    `/records?date=${date.toJSON()}`
+  );
+
+  return { initialRecord: result as InitialRecord, date };
 };
 
 export default Mood;
