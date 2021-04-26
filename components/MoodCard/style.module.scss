@@ -27,14 +27,13 @@ $categories: (
   border: 1.6px solid #3a3a3a;
   border-radius: 20px;
   padding: 12px;
-  height: 800px;
-  // height: 92px;
+  height: 92px;
 
   &::before {
     content: '';
   }
 
-  &.placeholder {
+  &.loading {
     position: relative;
 
     &:nth-child(3n) {
@@ -71,7 +70,7 @@ $categories: (
   font-size: $font-size;
   margin-bottom: 8px;
 
-  &.placeholder {
+  &.loading {
     height: $font-size;
     width: 120px;
     background-color: color(placeholder);
@@ -96,9 +95,14 @@ $categories: (
     margin-right: 4px;
   }
 
-  &.placeholder {
+  &.loading {
     background-color: color(placeholder);
     height: $font-size * 1.25;
     width: 40px;
   }
 };
+
+.withoutCard {
+  font-size: 1.4rem;
+  text-align: center;
+}
