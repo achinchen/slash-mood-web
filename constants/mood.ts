@@ -1,4 +1,4 @@
-import type { Moods, Categories } from 'types/mood';
+import type { Mood, Category } from 'types/mood';
 
 export const CATEGORIES = [
   'work',
@@ -11,7 +11,7 @@ export const CATEGORIES = [
   'achievement'
 ] as const;
 
-export const CATEGORIES_MAP: { [key in Categories]: string } = {
+export const CATEGORIES_MAP: { [key in Category]: string } = {
   work: '工作',
   home: '家庭',
   social: '人際',
@@ -33,7 +33,7 @@ export const MOODS = [
   'angry'
 ] as const;
 
-export const MOODS_MAP: { [key in Moods]: string } = {
+export const MOODS_MAP: { [key in Mood]: string } = {
   claim: '平靜',
   happy: '開心',
   smile: '微笑',
