@@ -1,9 +1,9 @@
-import { Categories, Moods } from './mood';
+import { Category, Mood } from './mood';
 
 export type Record = {
   id: number;
-  categories: Categories[number][];
-  mood: Moods[number];
+  categories: Category[];
+  mood: Mood;
   description: string;
   createdTime: string;
 };
