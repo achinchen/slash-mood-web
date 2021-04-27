@@ -18,9 +18,15 @@ const Button: FC<Props> = ({
   ...props
 }) => (
   <button
-    className={cx(className, styles.button, styles[size], styles[color], {
-      [styles.fullwidth]: fullwidth
-    })}
+    className={cx(
+      className,
+      styles.button,
+      styles[color],
+      size && styles[size],
+      {
+        [styles.fullwidth]: fullwidth
+      }
+    )}
     {...props}
   >
     {children}
