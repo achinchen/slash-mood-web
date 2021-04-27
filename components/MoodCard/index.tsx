@@ -16,9 +16,7 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => (
       alt={`${MOODS_MAP[mood]}`}
     />
     <p>
-      <time className={styles.time}>
-        {new Date(createdTime).toDateString()}
-      </time>
+      <time className={styles.time}>{new Date(createdTime).getDate()}</time>
       {categories.map((category) => (
         <span
           className={styles.tag}
@@ -28,6 +26,54 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => (
           {CATEGORIES_MAP[category]}
         </span>
       ))}
+      <div className={styles.menu}>
+        {/* <IconButton
+          id={MENU_BUTTON_ID}
+          aria-haspopup
+          aria-label={`${label}功能選單`}
+          iconOnClass="ellipsis-ios-regular"
+          color="transparent"
+          onClick={() => {
+            setIsExpanded((shown) => !shown);
+          }}
+        />
+        <div
+          role="menu"
+          tabIndex={isExpanded ? 0 : -1}
+          aria-labelledby={MENU_BUTTON_ID}
+          className={`${styles.menuOptions} ${
+            isExpanded ? styles.triggered : ''
+          }`}
+          ref={setRef}
+        >
+          <Button
+            styleType="outlined"
+            style={{ border: 'none' }}
+            color="secondary"
+            size="sm"
+            role="menuitem"
+            aria-label={`編輯${label}`}
+            disabled={isPending}
+            onClick={onEdit}
+          >
+            編輯
+          </Button>
+          <Button
+            styleType="outlined"
+            style={{ border: 'none' }}
+            color="secondary"
+            size="sm"
+            role="menuitem"
+            aria-label={`刪除${label}`}
+            disabled={isPending}
+            onClick={() => {
+              onDelete();
+            }}
+          >
+            刪除
+          </Button> */}
+        {/* </div> */}
+      </div>
     </p>
   </section>
 );

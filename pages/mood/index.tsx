@@ -10,6 +10,7 @@ import MoodCard, {
   LoadingMoodCard,
   WithoutMoodCard
 } from 'components/MoodCard';
+import IconButton from 'components/IconButton';
 import styles from './style.module.scss';
 
 const MONTHS = [
@@ -104,23 +105,19 @@ const Mood: NextPage<Props> = (props) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.header}>
-        <button className={styles.arrowButton} onClick={setMonth('previous')}>
-          <img
-            className={styles.arrowButtonIcon}
-            src="/images/icon/arrow-left.svg"
-            alt="選擇前一個月"
-          />
-        </button>
+        <IconButton
+          aria-label="選擇前一個月"
+          icon="arrow-left"
+          onClick={setMonth('previous')}
+        />
         <h1 className={styles.title}>
           {MONTHS[date.getMonth()]}, {date.getFullYear()}
         </h1>
-        <button className={styles.arrowButton} onClick={setMonth('next')}>
-          <img
-            className={styles.arrowButtonIcon}
-            src="/images/icon/arrow-right.svg"
-            alt="選擇前一個月"
-          />
-        </button>
+        <IconButton
+          aria-label="選擇後一個月"
+          icon="arrow-right"
+          onClick={setMonth('next')}
+        />
       </header>
       <main className={styles.main}>
         {data?.pages.map(({ page, records }) => (
