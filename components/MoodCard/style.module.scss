@@ -1,16 +1,5 @@
 @import '~styles/common.scss';
 
-$categories: (
-  work: #9BDBF7,
-  home: #FEDEA3,
-  social: #FAB9D0,
-  ability: #FAC696,
-  mentality: #74E8E8,
-  body: #9BF7D6,
-  financial: #BAB9FB,
-  achievement: #FF9999
-);
-
 @keyframes loading {
   from {
     transform: translateX(0%);
@@ -24,8 +13,9 @@ $categories: (
 .card {
   display: inline-flex;
   align-content: center;
-  border: 1.6px solid #3a3a3a;
-  border-radius: 20px;
+  border: 1.8px solid #A5A5A5;
+  box-shadow: 2px 1px 4px rgba(#A5A5A5, 0.25), 1px 2px 8px rgba(#A5A5A5, 0.1);
+  border-radius: 16px;
   padding: 12px;
   height: 92px;
 
@@ -43,7 +33,6 @@ $categories: (
         display: inline-flex;
       }
     }
-
 
     &::before {
       position: absolute;
@@ -84,12 +73,6 @@ $categories: (
   padding: 2px 4px;
   font-size: $font-size;
   letter-space: 0.4rem;
-
-  @each $category, $color in $categories {
-    &[data-label=#{$category}] {
-      background-color: $color;
-    }
-  }
 
   &:not(:last-child) {
     margin-right: 4px;
