@@ -2,81 +2,50 @@ import { FC } from 'react';
 import Link from 'next/link';
 import cx from 'clsx';
 import Emoji from '../Emoji';
+import Menu from '../Menu';
 import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
-type Props = Record;
+type Props = {
+  // onUpdate
+} & Record;
 
-const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => (
-  <section key={id} className={styles.card}>
-    <img
-      className={styles.mood}
-      src={`/images/mood/${mood}.svg`}
-      alt={`${MOODS_MAP[mood]}`}
-    />
-    <p>
-      <time className={styles.time}>{new Date(createdTime).getDate()}</time>
-      {categories.map((category) => (
-        <span
-          className={styles.tag}
-          key={`${id}-${category}`}
-          data-label={category}
-        >
-          {CATEGORIES_MAP[category]}
-        </span>
-      ))}
-      <div className={styles.menu}>
-        {/* <IconButton
-          id={MENU_BUTTON_ID}
-          aria-haspopup
-          aria-label={`${label}功能選單`}
-          iconOnClass="ellipsis-ios-regular"
-          color="transparent"
-          onClick={() => {
-            setIsExpanded((shown) => !shown);
-          }}
-        />
-        <div
-          role="menu"
-          tabIndex={isExpanded ? 0 : -1}
-          aria-labelledby={MENU_BUTTON_ID}
-          className={`${styles.menuOptions} ${
-            isExpanded ? styles.triggered : ''
-          }`}
-          ref={setRef}
-        >
-          <Button
-            styleType="outlined"
-            style={{ border: 'none' }}
-            color="secondary"
-            size="sm"
-            role="menuitem"
-            aria-label={`編輯${label}`}
-            disabled={isPending}
-            onClick={onEdit}
+const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
+  return (
+    <section key={id} className={styles.card}>
+      <img
+        className={styles.mood}
+        src={`/images/mood/${mood}.svg`}
+        alt={`${MOODS_MAP[mood]}`}
+      />
+      <p>
+        <time className={styles.time}>{new Date(createdTime).getDate()}</time>
+        {categories.map((category) => (
+          <span
+            className={styles.tag}
+            key={`${id}-${category}`}
+            data-label={category}
           >
-            編輯
-          </Button>
-          <Button
-            styleType="outlined"
-            style={{ border: 'none' }}
-            color="secondary"
-            size="sm"
-            role="menuitem"
-            aria-label={`刪除${label}`}
-            disabled={isPending}
-            onClick={() => {
-              onDelete();
-            }}
-          >
-            刪除
-          </Button> */}
-        {/* </div> */}
-      </div>
-    </p>
-  </section>
-);
+            {CATEGORIES_MAP[category]}
+          </span>
+        ))}
+      </p>
+      <Menu
+        id={`${id}`}
+        menuLabel="編輯功能選單"
+        editLabel="編輯心情紀錄"
+        deleteLabel="刪除心情紀錄"
+        onEdit={() => {
+          console.log();
+        }}
+        onDelete={() => {
+          console.log();
+        }}
+      />
+    </section>
+  );
+};
 
 export const LoadingMoodCard = (): JSX.Element => (
   <section className={cx(styles.card, styles.loading)}>
@@ -90,6 +59,7 @@ export const LoadingMoodCard = (): JSX.Element => (
         />
       ))}
     </p>
+    <Menu menuLabel="" />
   </section>
 );
 
