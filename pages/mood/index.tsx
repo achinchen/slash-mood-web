@@ -33,14 +33,16 @@ type CacheRecords = {
   pageParams: number[] | undefined[];
   pages: Records[];
 };
-type Props = Records | undefined;
+type Props = { props: Records | undefined };
 
-const Mood: NextPage<Props> = (props) => {
+const Mood: NextPage<Props> = ({ props }) => {
   const loadMoreButtonRef = useRef<HTMLDivElement>(null);
 
-  const [date, setDate] = useState(new Date(props.date));
+  const [date, setDate] = useState(
+    props?.date ? new Date(props.date) : new Date()
+  );
   const [initialRecords, setInitialRecord] = useState<Record[] | undefined>(
-    props.records
+    props?.records
   );
 
   const dateString = getDateString(date);
@@ -51,7 +53,7 @@ const Mood: NextPage<Props> = (props) => {
       | undefined;
     if (cacheRecords) return cacheRecords;
 
-    if (dateString === props.date && props.records)
+    if (dateString === props?.date && props.records)
       return {
         pages: [props],
         pageParams: [1]
@@ -153,8 +155,14 @@ const Mood: NextPage<Props> = (props) => {
 
 Mood.getInitialProps = async () => {
   const date = getDateString(new Date());
-  const result = await fetchInitialData(`/records?date=${date}`);
-  return result instanceof Error ? undefined : (result as Records);
+  try {
+    const result = await fetchInitialData(`/records?date=${date}`);
+    if (result instanceof Error) throw result;
+
+    return { props: result as Records };
+  } catch (e) {
+    return { props: undefined };
+  }
 };
 
 export default Mood;
