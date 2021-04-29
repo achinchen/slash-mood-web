@@ -27,7 +27,7 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
             key={`${id}-${category}`}
             data-label={category}
           >
-            {CATEGORIES_MAP[category]}
+            {CATEGORIES_MAP[category].label}
           </span>
         ))}
       </p>
@@ -59,7 +59,6 @@ export const LoadingMoodCard = (): JSX.Element => (
         />
       ))}
     </p>
-    <Menu menuLabel="" />
   </section>
 );
 

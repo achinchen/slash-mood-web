@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useMemo } from 'react';
+import { useState, ChangeEvent, useMemo, Fragment } from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
 import cx from 'clsx';
@@ -9,9 +9,11 @@ import Button from 'components/Button';
 import Emoji from 'components/Emoji';
 import styles from './style.module.scss';
 
+const MAXIMUM_CATEGORIES = 2;
+
 function CreateMood(): JSX.Element {
-  const [step, setStep] = useState(0);
-  const [mood, setMood] = useState<Mood>();
+  const [step, setStep] = useState(1);
+  const [mood, setMood] = useState<Mood>(MOODS[0]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [description, setDescription] = useState('');
   const [fetchedError, setFetchedError] = useState('發生不明問題，請重試看看');
@@ -40,6 +42,7 @@ function CreateMood(): JSX.Element {
         return categories.filter(
           (currentCategory) => currentCategory !== category
         );
+      if (categories.length > MAXIMUM_CATEGORIES) return categories;
       return [...categories, category];
     });
   };
@@ -140,22 +143,23 @@ function CreateMood(): JSX.Element {
             </h1>
             <section className={styles.categoryContainer}>
               {CATEGORIES.map((category) => (
-                <button
+                <Button
                   key={category}
+                  color="light"
                   className={cx(styles.categoryItem, {
                     [styles.selected]: categories.includes(category)
                   })}
                   onClick={selectCategory(category)}
                 >
-                  <span className={styles.categoryButton}>
-                    <img
+                  <Fragment>
+                    <Emoji
                       className={styles.categoryButtonIcon}
-                      src={`/images/category/${category}.svg`}
-                      alt={CATEGORIES_MAP[category]}
+                      aria-label={CATEGORIES_MAP[category].label}
+                      emoji={CATEGORIES_MAP[category].emoji}
                     />
-                  </span>
-                  {CATEGORIES_MAP[category]}
-                </button>
+                    {CATEGORIES_MAP[category].label}
+                  </Fragment>
+                </Button>
               ))}
             </section>
             <label className={styles.notes}>

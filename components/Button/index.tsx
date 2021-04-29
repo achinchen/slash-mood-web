@@ -1,9 +1,9 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import cx from 'clsx';
 import styles from './style.module.scss';
 
 type Props = {
-  children: string;
+  children: string | ReactNode;
   color: 'dark' | 'light';
   size?: 'sm' | 'md' | 'lg';
   fullwidth?: boolean;
