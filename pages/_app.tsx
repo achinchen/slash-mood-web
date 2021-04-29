@@ -1,7 +1,6 @@
 import type { AppProps } from 'next/app';
 import { useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
 import 'styles/globals.scss';
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
@@ -14,9 +13,6 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <QueryClientProvider client={queryClientRef.current}>
       <Component {...pageProps} />
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen />
-      )}
     </QueryClientProvider>
   );
 }
