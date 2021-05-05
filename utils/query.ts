@@ -53,10 +53,10 @@ export const fetchInitialData = async (
   }
 };
 
-export const paginationQuery = (path: string, page = 2) => {
+export const paginationQuery = (path: string) => {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  return async function ({ pageParam = page }: Pagination) {
-    const response = await fetch(`${API_HOSTNAME}${path}&page=${pageParam}`);
+  return async function ({ pageParam = 2 }: Pagination) {
+    const response = await fetch(`${API_HOSTNAME}${path}?page=${pageParam}`);
 
     const result = await response.json();
 
