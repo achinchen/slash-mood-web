@@ -27,6 +27,10 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
             key={`${id}-${category}`}
             data-label={category}
           >
+            <Emoji
+              emoji={CATEGORIES_MAP[category].emoji}
+              aria-label={CATEGORIES_MAP[category].label}
+            />
             {CATEGORIES_MAP[category].label}
           </span>
         ))}
