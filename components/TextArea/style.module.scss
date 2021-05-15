@@ -1,0 +1,46 @@
+@import '~styles/common.scss';
+
+.field {
+  position: relative;
+  height: 60px;
+
+  &Label {
+    $label: &;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(12px, -50%);
+    font-size: 1.6rem;
+    transform-origin: left;
+    will-change: transform;
+    transition: .1s;
+
+    &.focus {
+      transform: scale(0.75) translate(20px, -160%);
+    }
+  }
+
+  &Input {
+    height: 100px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid color(placeholder);
+    border-radius: 8px;
+    resize: none;
+
+    &.invalid {
+      border-color: red;
+    }
+
+    &:focus-visible {
+      outline:  color(black) auto 1.6px;
+    }
+  }
+
+  &HelperText {
+    font-size: 1.2rem;
+    margin: 4px 0 0 4px;
+    color: red;
+  }
+}
+
