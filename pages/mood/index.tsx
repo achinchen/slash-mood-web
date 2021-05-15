@@ -58,8 +58,6 @@ const Mood: NextPage<Props> = ({ props }) => {
     }
   );
 
-  console.log(initialDataFromCache);
-
   useIntersectionObserver({
     targetRef: loadMoreButtonRef,
     onIntersect: fetchNextPage,

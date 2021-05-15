@@ -25,12 +25,11 @@
   grid-template-columns: 1fr;
 
   @include media(tablet) {
-    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 
   @include media(landscape) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
 }

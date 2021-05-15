@@ -22,14 +22,13 @@ body {
 
 @media screen and (min-width: 600px) {
   body {
-    max-width: initial;
+    max-width: 500px;
   }
 }
 
 @media screen and (min-width: 900px) {
   body {
-    width: 90%;
-    max-width: 1000px;
+    max-width: 750px;
   }
 }
 
