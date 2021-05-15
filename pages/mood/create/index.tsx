@@ -6,14 +6,15 @@ import { MOODS_MAP, MOODS, CATEGORIES_MAP, CATEGORIES } from 'constants/mood';
 import { Category, Mood } from 'types/mood';
 import query from 'utils/query';
 import Button from 'components/Button';
+import IconButton from 'components/IconButton';
+import TextArea from 'components/TextArea';
 import Emoji from 'components/Emoji';
 import styles from './style.module.scss';
 
 const MAXIMUM_CATEGORIES = 2;
 
 function CreateMood(): JSX.Element {
-  const [step, setStep] = useState(1);
-  const [mood, setMood] = useState<Mood>(MOODS[0]);
+  const [mood, setMood] = useState<Mood>();
   const [categories, setCategories] = useState<Category[]>([]);
   const [description, setDescription] = useState('');
   const [fetchedError, setFetchedError] = useState('發生不明問題，請重試看看');
@@ -27,12 +28,9 @@ function CreateMood(): JSX.Element {
     [mood, categories, description]
   );
 
-  const moodLabel = mood ? MOODS_MAP[mood] : ' ';
+  const moodLabel = mood ? MOODS_MAP[mood] : ' ___ ';
 
-  const nextStep = () => setStep(step + 1);
-  const previousStep = () => setStep(step - 1);
-
-  const onClose = () => (step ? previousStep() : window.history.go(-1));
+  const onClose = () => window.history.go(-1);
 
   const selectMood = (mood: Mood) => () => setMood(mood);
 
@@ -69,135 +67,89 @@ function CreateMood(): JSX.Element {
   const onSubmit = () => refetch();
 
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>Add Mood Log</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {step === 0 && (
-        <>
-          <header className={styles.header}>
-            <button className={styles.closeButton} onClick={onClose}>
+      <header className={styles.header}>
+        <IconButton
+          icon="close"
+          aria-label="關閉"
+          className={styles.closeButton}
+          onClick={onClose}
+        />
+      </header>
+      <main className={styles.main}>
+        <h1 className={styles.title}>今天的心情是？</h1>
+        <section className={styles.mood}>
+          {MOODS.map((m) => (
+            <button
+              key={m}
+              className={cx(styles.moodButton, {
+                [styles.unselected]: mood && mood !== m
+              })}
+              onClick={selectMood(m)}
+            >
               <img
-                className={styles.closeButtonIcon}
-                src="/images/icon/close.svg"
-                alt="關閉"
+                className={styles.moodButtonIcon}
+                src={`/images/mood/${m}.svg`}
+                alt={`${MOODS_MAP[m]}的心情`}
               />
             </button>
-            <h1 className={styles.title}>
-              你的心情是{' '}
-              <span
-                className={styles.titleLabel}
-                data-mood={mood}
-                aria-label={moodLabel}
-              />
-            </h1>
-          </header>
-          <main className={styles.main} data-step="0">
-            {MOODS.map((mood) => (
-              <button
-                key={mood}
-                className={styles.moodButton}
-                data-mood={mood}
-                onClick={selectMood(mood)}
-              >
-                <img
-                  className={styles.moodButtonIcon}
-                  src={`/images/mood/${mood}.svg`}
-                  alt={`${MOODS_MAP[mood]}的心情`}
-                />
-              </button>
-            ))}
-          </main>
-          <footer className={styles.bottom}>
-            <Button color="light" size="md" disabled={!mood} onClick={nextStep}>
-              下一步
-            </Button>
-          </footer>
-        </>
-      )}
-      {step === 1 && (
-        <>
-          <header className={styles.header}>
-            <button className={styles.closeButton} onClick={onClose}>
-              <img
-                className={styles.closeButtonIcon}
-                src="/images/icon/close.svg"
-                alt="關閉"
-              />
-            </button>
-            <figure className={styles.moodFigure}>
-              <img
-                className={styles.moodFigureSource}
-                src={`/images/mood/${mood}.svg`}
-                alt={moodLabel}
-              />
-              <figcaption>
-                {moodLabel} {mood}
-              </figcaption>
-            </figure>
-          </header>
-          <main className={styles.main} data-step="1">
-            <h1 className={styles.categoryLabel}>
-              是什麼讓你「{moodLabel}」？
-            </h1>
-            <section className={styles.categoryContainer}>
-              {CATEGORIES.map((category) => (
-                <Button
-                  key={category}
-                  color="light"
-                  className={cx(styles.categoryItem, {
-                    [styles.selected]: categories.includes(category)
-                  })}
-                  onClick={selectCategory(category)}
-                >
-                  <Fragment>
-                    <Emoji
-                      className={styles.categoryButtonIcon}
-                      aria-label={CATEGORIES_MAP[category].label}
-                      emoji={CATEGORIES_MAP[category].emoji}
-                    />
-                    {CATEGORIES_MAP[category].label}
-                  </Fragment>
-                </Button>
-              ))}
-            </section>
-            <label className={styles.notes}>
-              Notes
-              <textarea
-                value={description}
-                onChange={onDescriptionChange}
-                className={styles.notesTextarea}
-                maxLength={300}
-              />
-            </label>
-            <div className={styles.error} hidden={!isError}>
-              <Emoji emoji="🥺" aria-label="Some error happened!" />
-              {fetchedError}
-            </div>
-          </main>
-          <footer className={styles.bottom}>
+          ))}
+        </section>
+        <h2 className={styles.title}>
+          是什麼讓你「{moodLabel}」？
+          <span className={styles.categoryRest}>{`(${
+            3 - categories.length
+          })`}</span>
+        </h2>
+        <section className={styles.category}>
+          {CATEGORIES.map((category) => (
             <Button
-              size="sm"
+              key={category}
               color="light"
-              onClick={previousStep}
-              disabled={isLoading}
+              className={cx(styles.categoryItem, {
+                [styles.selected]: categories.includes(category)
+              })}
+              onClick={selectCategory(category)}
+              disabled={!mood}
             >
-              上一步
+              <Fragment>
+                <Emoji
+                  className={styles.categoryButtonIcon}
+                  aria-label={CATEGORIES_MAP[category].label}
+                  emoji={CATEGORIES_MAP[category].emoji}
+                />
+                {CATEGORIES_MAP[category].label}
+              </Fragment>
             </Button>
-            <Button
-              className={styles.submitButton}
-              size="sm"
-              color="dark"
-              disabled={mood && isLoading}
-              onClick={onSubmit}
-            >
-              完成
-            </Button>
-          </footer>
-        </>
-      )}
-    </div>
+          ))}
+        </section>
+        <h3 className={styles.title}>Notes</h3>
+        <TextArea
+          value={description}
+          onChange={onDescriptionChange}
+          maxLength={300}
+        />
+        <div className={styles.error} hidden={!isError}>
+          <Emoji emoji="🥺" aria-label="Some error happened!" />
+          {fetchedError}
+        </div>
+      </main>
+      <footer className={styles.bottom}>
+        <Button
+          className={styles.submitButton}
+          size="sm"
+          color="dark"
+          disabled={!mood && isLoading}
+          onClick={onSubmit}
+        >
+          完成
+        </Button>
+      </footer>
+    </>
   );
 }
 
