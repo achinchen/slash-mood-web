@@ -53,35 +53,34 @@
   margin-right: 12px;  
 }
 
+.text {
+  margin: 8px 0;
+}
+
 .time {
   $font-size: 1.6rem;
 
   display: block;
   font-size: $font-size;
-  margin-bottom: 8px;
 
   &.loading {
     height: $font-size;
     width: 120px;
-    background-color: color(placeholder);
+    background-color: color(gray-light);
   }
 }
 
 .tag {
-  $font-size: 1.2rem;
-
   display: inline-block;
   padding: 2px 4px;
-  font-size: $font-size;
-  letter-space: 0.4rem;
 
   &:not(:last-child) {
     margin-right: 4px;
   }
 
   &.loading {
-    background-color: color(placeholder);
-    height: $font-size * 1.25;
+    background-color: color(gray-light);
+    height: 1.6rem;
     width: 40px;
   }
 };

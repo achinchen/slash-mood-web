@@ -1,17 +1,39 @@
 import { FC } from 'react';
 import Link from 'next/link';
 import cx from 'clsx';
-import Emoji from '../Emoji';
-import Menu from '../Menu';
+import { useQuery } from 'react-query';
+import Emoji from 'components/Emoji';
+import Menu from 'components/Menu';
 import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
+import { triggerYesNoDialog } from 'components/YesNoDialog';
+import { getDateTime } from 'utils';
+import query from 'utils/query';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
-type Props = {
-  // onUpdate
-} & Record;
+type Props = Record;
 
 const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
+  const date = getDateTime(new Date(createdTime));
+
+  const { isLoading, refetch: deleteRecord } = useQuery(
+    `deleteRecord-${id}`,
+    query(`/records/${id}`, { method: 'DELETE' }),
+    {
+      enabled: false,
+      retry: false,
+      onSuccess: () => window.location.reload()
+    }
+  );
+
+  const onDelete = () => {
+    triggerYesNoDialog({
+      withCancel: true,
+      isActiveClose: true,
+      children: `確認刪除 ${date} 紀錄嗎？`,
+      onConfirm: deleteRecord
+    });
+  };
   return (
     <section key={id} className={styles.card}>
       <img
@@ -20,19 +42,14 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
         alt={`${MOODS_MAP[mood]}`}
       />
       <p>
-        <time className={styles.time}>{new Date(createdTime).getDate()}</time>
+        <time className={styles.time}>{date}</time>
         {categories.map((category) => (
-          <span
+          <Emoji
             className={styles.tag}
             key={`${id}-${category}`}
-            data-label={category}
-          >
-            <Emoji
-              emoji={CATEGORIES_MAP[category].emoji}
-              aria-label={CATEGORIES_MAP[category].label}
-            />
-            {CATEGORIES_MAP[category].label}
-          </span>
+            emoji={CATEGORIES_MAP[category].emoji}
+            aria-label={CATEGORIES_MAP[category].label}
+          />
         ))}
       </p>
       <Menu
@@ -43,9 +60,8 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
         onEdit={() => {
           console.log();
         }}
-        onDelete={() => {
-          console.log();
-        }}
+        disabled={isLoading}
+        onDelete={onDelete}
       />
     </section>
   );
@@ -54,7 +70,7 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
 export const LoadingMoodCard = (): JSX.Element => (
   <section className={cx(styles.card, styles.loading)}>
     <img className={styles.mood} src="/images/mood/loading.svg" alt="載入中" />
-    <p>
+    <p className={styles.text}>
       <time className={cx(styles.time, styles.loading)} />
       {Array.from({ length: 3 }).map((_, categoryIndex) => (
         <span

@@ -1,11 +1,11 @@
 import { useRef, useMemo, Fragment } from 'react';
 import Head from 'next/head';
 import { NextPage } from 'next';
-import { useQueryClient, useInfiniteQuery } from 'react-query';
+import { useQueryClient, useInfiniteQuery, QueryCache } from 'react-query';
 import { paginationQuery, fetchInitialData } from 'utils/query';
 import { getDateString } from 'utils';
-import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import { Record, PaginationResult } from 'types/record';
+import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import MoodCard, {
   LoadingMoodCard,
   WithoutMoodCard
@@ -24,6 +24,7 @@ const Mood: NextPage<Props> = ({ props }) => {
 
   const dateString = getDateString(new Date());
   const queryClient = useQueryClient();
+
   const initialDataFromCache = useMemo(() => {
     const cacheRecords = queryClient.getQueryData(['record', dateString]) as
       | CacheRecords
@@ -37,7 +38,7 @@ const Mood: NextPage<Props> = ({ props }) => {
       };
   }, [props, dateString, queryClient]);
 
-  const query = paginationQuery(`/records`);
+  const queryRecords = paginationQuery(`/records`);
 
   const {
     data,
@@ -46,7 +47,7 @@ const Mood: NextPage<Props> = ({ props }) => {
     fetchNextPage
   } = useInfiniteQuery<PaginationResult & { records: Record[] }, Error>(
     ['record', dateString],
-    query,
+    queryRecords,
     {
       retry: 0,
       initialData: initialDataFromCache,
@@ -75,9 +76,9 @@ const Mood: NextPage<Props> = ({ props }) => {
       <main className={styles.main}>
         {data?.pages.map(({ page, records }) => (
           <Fragment key={`page-${page}`}>
-            {records.map((record) => (
-              <MoodCard {...record} key={record.id} />
-            ))}
+            {records.map((record) => {
+              return <MoodCard {...record} key={record.id} />;
+            })}
           </Fragment>
         ))}
         {isFetchingNextPage && <LoadingMoodCard />}
