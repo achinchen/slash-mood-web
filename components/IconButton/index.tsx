@@ -5,10 +5,14 @@ import styles from './style.module.scss';
 type Props = {
   icon: string;
   'aria-label': string;
+  size?: 'sm' | 'md';
 } & React.ComponentProps<'button'>;
 
-const IconButton: FC<Props> = ({ icon, className, ...props }) => (
-  <button className={cx(className, styles.iconButton)} {...props}>
+const IconButton: FC<Props> = ({ icon, className, size = 'md', ...props }) => (
+  <button
+    className={cx(className, styles.iconButton, size && styles[size])}
+    {...props}
+  >
     <img
       className={styles.iconButtonImage}
       src={`/images/icon/${icon}.svg`}

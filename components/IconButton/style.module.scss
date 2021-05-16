@@ -1,11 +1,26 @@
 @import '~styles/common.scss';
 
 .iconButton {
+  $self: &;
+
   position: relative;
-  width: 36px;
-  height: 36px;
+
   border-radius: 50%;
   border: 1.2px solid transparent;
+
+  &.sm {
+    width: 32px;
+    height: 32px;
+
+    > #{$self}Image {
+      width: 20px;
+    }
+  }
+
+  &.md {
+    width: 36px;
+    height: 36px;
+  }
 
   &::before {
     position: absolute;
@@ -17,7 +32,7 @@
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    background-color: color(placeholder);
+    background-color: color(gray-light);
     will-change: opacity;
     transition: .3s;
   }
@@ -30,7 +45,7 @@
 
   &:focus {
     outline: 0;
-    border-color: color(black);
+    border-color: color(gray-dark);
   }
 
   &Image {
