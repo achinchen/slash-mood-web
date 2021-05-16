@@ -9,7 +9,7 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 48px;
+  margin-block-end: 48px;
 }
 
 .title {
@@ -23,6 +23,7 @@
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
+  font-size: 1.6rem;
 
   @include media(tablet) {
     gap: 16px;
