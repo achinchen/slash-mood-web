@@ -5,7 +5,7 @@ import styles from './style.module.scss';
 type Props = {
   children: string | ReactNode;
   color: 'dark' | 'light';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   fullwidth?: boolean;
 } & React.ComponentProps<'button'>;
 
