@@ -1,3 +1,5 @@
+@import '~styles/common.scss';
+
 html,
 body {
    font-family: system-ui, -apple-system, BlinkMacSystemFont, PingFang TC, 
@@ -20,18 +22,14 @@ body {
   margin: auto;
   color: color(black);
 
-@media screen and (min-width: 600px) {
-  body {
+  @include media(tablet) {
     max-width: 500px;
   }
-}
 
-@media screen and (min-width: 900px) {
-  body {
+  @include media(landscape) {
     max-width: 750px;
   }
 }
-
 
 a {
   color: inherit;
