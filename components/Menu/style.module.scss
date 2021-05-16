@@ -12,14 +12,9 @@
     width: 80px;
     right: 0;
     background-color: white;
-    border: 1px solid color(placeholder);
+    border: 1px solid color(gray-light);
     border-radius: 4px;
     overflow: hidden;
-    // opacity: 0;
-
-    // &.expanded {
-    //   opacity: 1;
-    // }
 
     &Button {
       font-size: 1.4rem;

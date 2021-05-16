@@ -4,17 +4,13 @@
   display: flex;
   flex-direction: column;
   padding: 12px 24px;
+  margin: auto;
   border-radius: 8px;
   border: 2px solid transparent;
 
-  @include media(tablet) {
-    max-width: 400px;
-    margin: auto;
-  }
-
   @include media(landscape) {
     min-height: 600px;
-    border-color: #3a3a3a;
+    border-color: color(gray-dark);
   }
 }
 

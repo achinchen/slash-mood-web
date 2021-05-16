@@ -24,7 +24,7 @@
     height: 100px;
     width: 100%;
     padding: 12px;
-    border: 1px solid color(placeholder);
+    border: 1px solid color(gray-light);
     border-radius: 8px;
     resize: none;
 
@@ -33,7 +33,7 @@
     }
 
     &:focus-visible {
-      outline:  color(black) auto 1.6px;
+      outline:  color(gray-dark) auto 1.6px;
     }
   }
 
