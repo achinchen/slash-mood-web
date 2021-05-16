@@ -3,6 +3,8 @@ import { useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import 'styles/globals.scss';
 
+export const PORTAL_ID = 'portal';
+
 function App({ Component, pageProps }: AppProps): JSX.Element {
   const queryClientRef: { current?: QueryClient } = useRef();
 
@@ -13,6 +15,7 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <QueryClientProvider client={queryClientRef.current}>
       <Component {...pageProps} />
+      <div id={PORTAL_ID} />
     </QueryClientProvider>
   );
 }
