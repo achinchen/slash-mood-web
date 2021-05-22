@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Link from 'next/link';
 import cx from 'clsx';
 import { useQuery } from 'react-query';
@@ -6,6 +6,9 @@ import Emoji from 'components/Emoji';
 import Menu from 'components/Menu';
 import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
 import { triggerYesNoDialog } from 'components/YesNoDialog';
+import Modal from 'components/Modal';
+import EditMood from './EditMood';
+import { Parameters } from './hooks';
 import { getDateTime } from 'utils';
 import query from 'utils/query';
 import type { Record } from 'types/record';
@@ -13,10 +16,22 @@ import styles from './style.module.scss';
 
 type Props = Record;
 
-const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
+const MoodCard: FC<Props> = ({
+  id,
+  mood,
+  categories,
+  description,
+  createdTime
+}) => {
   const date = getDateTime(new Date(createdTime));
+  const [mode, setMode] = useState<'edit' | 'delete' | undefined>();
+  const [payload, setPayload] = useState<Parameters>({
+    mood,
+    categories,
+    description
+  });
 
-  const { isLoading, refetch: deleteRecord } = useQuery(
+  const { isLoading: deleteRequestLoading, refetch: deleteRecord } = useQuery(
     `deleteRecord-${id}`,
     query(`/records/${id}`, { method: 'DELETE' }),
     {
@@ -34,36 +49,60 @@ const MoodCard: FC<Props> = ({ id, mood, categories, createdTime }) => {
       onConfirm: deleteRecord
     });
   };
+
+  const { isLoading: updateRequestLoading, refetch: updateRecord } = useQuery(
+    `updateRecord-${id}`,
+    query(`/records/${id}`, {
+      method: 'PUT',
+      ...(payload && { payload })
+    }),
+    {
+      enabled: false,
+      retry: false,
+      onSuccess: () => window.location.reload()
+    }
+  );
+
+  const onUpdate = async (payload: Parameters) => {
+    setPayload(payload);
+    updateRecord();
+  };
+
+  const onEdit = () => {
+    setMode('edit');
+  };
+
   return (
-    <section key={id} className={styles.card}>
-      <img
-        className={styles.mood}
-        src={`/images/mood/${mood}.svg`}
-        alt={`${MOODS_MAP[mood]}`}
-      />
-      <p>
-        <time className={styles.time}>{date}</time>
-        {categories.map((category) => (
-          <Emoji
-            className={styles.tag}
-            key={`${id}-${category}`}
-            emoji={CATEGORIES_MAP[category].emoji}
-            aria-label={CATEGORIES_MAP[category].label}
-          />
-        ))}
-      </p>
-      <Menu
-        id={`${id}`}
-        menuLabel="編輯功能選單"
-        editLabel="編輯心情紀錄"
-        deleteLabel="刪除心情紀錄"
-        onEdit={() => {
-          console.log();
-        }}
-        disabled={isLoading}
-        onDelete={onDelete}
-      />
-    </section>
+    <>
+      <section key={id} className={styles.card}>
+        <img
+          className={styles.mood}
+          src={`/images/mood/${mood}.svg`}
+          alt={`${MOODS_MAP[mood]}`}
+        />
+        <p>
+          <time className={styles.time}>{date}</time>
+          {categories.map((category) => (
+            <Emoji
+              className={styles.tag}
+              key={`${id}-${category}`}
+              emoji={CATEGORIES_MAP[category].emoji}
+              aria-label={CATEGORIES_MAP[category].label}
+            />
+          ))}
+        </p>
+        <Menu
+          id={String(id)}
+          menuLabel="編輯功能選單"
+          editLabel="編輯心情紀錄"
+          deleteLabel="刪除心情紀錄"
+          onEdit={onEdit}
+          disabled={deleteRequestLoading || updateRequestLoading}
+          onDelete={onDelete}
+        />
+      </section>
+      {mode === 'edit' && <EditMood {...payload} onUpdate={onUpdate} />}
+    </>
   );
 };
 

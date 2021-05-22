@@ -1,7 +1,7 @@
 import { useRef, useMemo, Fragment } from 'react';
 import Head from 'next/head';
 import { NextPage } from 'next';
-import { useQueryClient, useInfiniteQuery, QueryCache } from 'react-query';
+import { useQueryClient, useInfiniteQuery } from 'react-query';
 import { paginationQuery, fetchInitialData } from 'utils/query';
 import { getDateString } from 'utils';
 import { Record, PaginationResult } from 'types/record';
