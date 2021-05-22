@@ -39,7 +39,7 @@ const YesNoDialog: FC<Props> = ({
     onClose?.();
   };
 
-  const triggerButton = (buttonType: 'cancel' | 'confirm') => () => {
+  const onClick = (buttonType: 'cancel' | 'confirm') => () => {
     if (buttonType === 'confirm') {
       if (onConfirm) onConfirm();
     } else {
@@ -84,7 +84,7 @@ const YesNoDialog: FC<Props> = ({
               color="light"
               size="xs"
               className={styles.dialogButtonItem}
-              onClick={triggerButton('cancel')}
+              onClick={onClick('cancel')}
             >
               取消
             </Button>
@@ -93,7 +93,7 @@ const YesNoDialog: FC<Props> = ({
             color="dark"
             size="xs"
             className={styles.dialogButtonItem}
-            onClick={triggerButton('confirm')}
+            onClick={onClick('confirm')}
           >
             確認
           </Button>
