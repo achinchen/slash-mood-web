@@ -7,7 +7,7 @@
 
   &Field {
     &:not(:last-child) {
-      margin-bottom: 24px;
+      margin-block-end: 24px;
     }
   }
 }

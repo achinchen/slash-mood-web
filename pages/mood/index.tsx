@@ -1,38 +1,69 @@
+import { useRef, useMemo, Fragment } from 'react';
 import Head from 'next/head';
-import MoodCards from 'components/MoodCards';
-import { Category } from 'types/mood';
-import { MOOD } from 'constants/mood';
+import { NextPage } from 'next';
+import { useQueryClient, useInfiniteQuery } from 'react-query';
+import { paginationQuery, fetchInitialData } from 'utils/query';
+import { getDateString } from 'utils';
+import { Record, PaginationResult } from 'types/record';
+import useIntersectionObserver from 'hooks/useIntersectionObserver';
+import MoodCard, {
+  LoadingMoodCard,
+  WithoutMoodCard
+} from 'components/MoodCard';
 import styles from './style.module.scss';
 
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec'
-];
-
-const generateMockMood = (length: number) => {
-  return Array.from({ length }, (_, index) => ({
-    time: `${String(index + 1).padStart(2, '0')} 星期三 ${String(
-      index * 3 + Math.floor(Math.random() * 10)
-    ).padStart(2, '0')}:00`,
-    categories: ['work', 'home'] as Category[],
-    mood: MOOD[(index + Math.floor(Math.random() * 10)) % MOOD.length]
-  }));
+type Records = { records: Record[]; date: string } & PaginationResult;
+type CacheRecords = {
+  pageParams: number[] | undefined[];
+  pages: Records[];
 };
+type Props = { props: Records | undefined };
 
-const moock = generateMockMood(4);
-function Mood(): JSX.Element {
-  const month = new Date().getMonth();
-  const year = new Date().getFullYear();
+const Mood: NextPage<Props> = ({ props }) => {
+  const loadMoreButtonRef = useRef<HTMLDivElement>(null);
+
+  const dateString = getDateString(new Date());
+  const queryClient = useQueryClient();
+
+  const initialDataFromCache = useMemo(() => {
+    const cacheRecords = queryClient.getQueryData(['record', dateString]) as
+      | CacheRecords
+      | undefined;
+    if (cacheRecords) return cacheRecords;
+
+    if (props)
+      return {
+        pages: [props],
+        pageParams: [1]
+      };
+  }, [props, dateString, queryClient]);
+
+  const queryRecords = paginationQuery(`/records`);
+
+  const {
+    data,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteQuery<PaginationResult & { records: Record[] }, Error>(
+    ['record', dateString],
+    queryRecords,
+    {
+      retry: 0,
+      initialData: initialDataFromCache,
+      getNextPageParam: (lastPage) => lastPage && lastPage.nextPage,
+      enabled:
+        !initialDataFromCache ||
+        !!initialDataFromCache.pages[initialDataFromCache.pages.length - 1]
+          .nextPage
+    }
+  );
+
+  useIntersectionObserver({
+    targetRef: loadMoreButtonRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage
+  });
 
   const addMood = () => window.location.assign('/mood/create');
 
@@ -42,26 +73,18 @@ function Mood(): JSX.Element {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className={styles.header}>
-        <button className={styles.arrowButton}>
-          <img
-            className={styles.arrowButtonIcon}
-            src="/images/icon/arrow-left.svg"
-            alt="選擇前一個月"
-          />
-        </button>
-        <h1 className={styles.title}>
-          {MONTHS[month]}, {year}
-        </h1>
-        <button className={styles.arrowButton}>
-          <img
-            className={styles.arrowButtonIcon}
-            src="/images/icon/arrow-right.svg"
-            alt="選擇前一個月"
-          />
-        </button>
-      </header>
-      <MoodCards moodList={moock} />
+      <main className={styles.main}>
+        {data?.pages.map(({ page, records }) => (
+          <Fragment key={`page-${page}`}>
+            {records.map((record) => {
+              return <MoodCard {...record} key={record.id} />;
+            })}
+          </Fragment>
+        ))}
+        {isFetchingNextPage && <LoadingMoodCard />}
+      </main>
+      {!data?.pages[0].records.length && <WithoutMoodCard />}
+      <div className={styles.loadMoreRef} ref={loadMoreButtonRef} />
       <button className={styles.addMoodButton} onClick={addMood}>
         <img
           className={styles.addMoodButtonIcon}
@@ -69,17 +92,20 @@ function Mood(): JSX.Element {
           alt="增加心情紀錄"
         />
       </button>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by @achin
-        </a>
-      </footer>
     </div>
   );
-}
+};
+
+Mood.getInitialProps = async () => {
+  const date = getDateString(new Date());
+  try {
+    const result = await fetchInitialData(`/records?date=${date}`);
+    if (result instanceof Error) throw result;
+
+    return { props: result as Records };
+  } catch (e) {
+    return { props: undefined };
+  }
+};
 
 export default Mood;

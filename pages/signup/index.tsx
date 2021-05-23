@@ -68,7 +68,6 @@ function SignUp(): JSX.Element {
       onSuccess: () => window.location.assign('/mood')
     }
   );
-  console.log({ passValidation, isLoading });
 
   const onSubmit = () => refetch();
 

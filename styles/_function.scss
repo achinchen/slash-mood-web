@@ -1,0 +1,3 @@
+@function color($colorKey) {
+  @return map-get($colors, $colorKey)
+}

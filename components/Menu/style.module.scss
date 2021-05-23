@@ -1,0 +1,26 @@
+@import '~styles/common.scss';
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+
+  &Option {
+    position: absolute;
+    width: 80px;
+    right: 0;
+    background-color: white;
+    border: 1px solid color(gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+
+    &Button {
+      font-size: 1.4rem;
+      height: 36px;
+      border-color: transparent;
+      border-radius: 0;
+    }
+  }
+}

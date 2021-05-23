@@ -1,13 +1,15 @@
+@import '~styles/common.scss';
+
 .container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 48px;
+  margin-block-end: 48px;
 }
 
 .title {
@@ -17,9 +19,22 @@
   line-height: 1.8;
 }
 
-.footer {
-  margin: auto auto 20px;
+.main {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  font-size: 1.6rem;
+
+  @include media(tablet) {
+    gap: 16px;
+  }
+
+  @include media(landscape) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
 }
+
 
 .addMoodButton {
   position: fixed;
@@ -33,18 +48,6 @@
   height: 48px;
   border-radius: 50%;
   background-color: #333333;
-
-  &Icon {
-    width: 28px;
-  }
-}
-
-.arrowButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 32px;
-  height: 32px;
 
   &Icon {
     width: 28px;

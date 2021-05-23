@@ -1,0 +1,60 @@
+@import '~styles/common.scss';
+
+.dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+
+  &[aria-hidden=true] {
+    display: none;
+  }
+
+  &Scrim {
+    height: 100%;
+    background-color: rgba(color(gray-dark), 0.5);
+  }
+
+  &Root {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    margin: 10vh auto;
+    width: 240px;
+    max-height: 80vh;
+    max-width: 90vw;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  &Title {
+    margin: 0 0 8px;
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+
+  &Close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(-4px, 4px);  }
+
+  &Content {
+    margin-block-end: 16px;
+    font-size: 1.4rem;
+  }
+
+  &Button {
+    text-align: right;
+
+    &Item {
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+}

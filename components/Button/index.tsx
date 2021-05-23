@@ -1,11 +1,11 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import cx from 'clsx';
 import styles from './style.module.scss';
 
 type Props = {
-  children: string;
+  children: string | ReactNode;
   color: 'dark' | 'light';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   fullwidth?: boolean;
 } & React.ComponentProps<'button'>;
 
@@ -18,9 +18,15 @@ const Button: FC<Props> = ({
   ...props
 }) => (
   <button
-    className={cx(className, styles.button, styles[size], styles[color], {
-      [styles.fullwidth]: fullwidth
-    })}
+    className={cx(
+      className,
+      styles.button,
+      styles[color],
+      size && styles[size],
+      {
+        [styles.fullwidth]: fullwidth
+      }
+    )}
     {...props}
   >
     {children}
