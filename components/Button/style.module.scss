@@ -49,6 +49,16 @@ $height-size: (
       opacity: 0.36;
     }
   }
+
+  &[disabled] {
+    opacity: 0.6;
+
+    &:hover {
+      &::before {
+        opacity: 0;
+      }
+    }
+  }
 };
 
 .dark {
