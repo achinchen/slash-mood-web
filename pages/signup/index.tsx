@@ -1,9 +1,9 @@
 import { useState, useRef, useMemo, useEffect, Fragment } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useQuery } from 'react-query';
+import Router from 'next/router';
+import fetch from 'libs/fetch';
 import useEmail from 'hooks/useEmail';
-import query from 'utils/query';
 import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
@@ -12,6 +12,7 @@ import usePassword from 'hooks/usePassword';
 import useNickname from 'hooks/useNickname';
 
 function SignUp(): JSX.Element {
+  const [loading, setLoading] = useState(false);
   const recaptchaRef = useRef<HTMLDivElement>(null);
   const [finishedRecaptchaCallback, setFinishedRecaptchaCallback] = useState(
     false
@@ -54,22 +55,21 @@ function SignUp(): JSX.Element {
     [email, password, nickname]
   );
 
-  const { isLoading, refetch } = useQuery(
-    'signup',
-    query('/signup', { method: 'POST', payload }),
-    {
-      enabled: false,
-      retry: false,
-      onError: ({ status }) => {
-        if (status === 409) duplicatedEmailHelper();
+  const onSubmit = async () => {
+    setLoading(true);
 
-        // TODO: handle other validation error;
-      },
-      onSuccess: () => window.location.assign('/mood')
+    try {
+      await fetch('signup', { method: 'POST', payload });
+      console.log('before');
+      Router.replace('/mood');
+      console.log('after');
+    } catch ({ status }) {
+      if (status === 409) duplicatedEmailHelper();
+      // TODO: handle other validation error;
     }
-  );
 
-  const onSubmit = () => refetch();
+    setLoading(false);
+  };
 
   useEffect(() => {
     window['onLoadRecaptcha'] = () => {
@@ -134,9 +134,10 @@ function SignUp(): JSX.Element {
         <footer className={styles.bottom}>
           <Button
             color="dark"
+            size="lg"
             fullwidth
             onClick={onSubmit}
-            disabled={!passValidation || isLoading}
+            disabled={!passValidation || loading}
           >
             註冊
           </Button>
