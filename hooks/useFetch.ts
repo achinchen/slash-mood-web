@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import fetcher, { FetchError } from 'libs/fetch';
+import fetch, { FetchError } from 'libs/fetch';
 
 type Parameter = {
-  fetchArgs: Parameters<typeof fetcher>;
+  fetchArgs: Parameters<typeof fetch>;
   onSuccess?: (result: unknown) => void;
   onError?: (error: FetchError) => void;
 };

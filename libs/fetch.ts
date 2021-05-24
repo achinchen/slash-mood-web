@@ -20,7 +20,8 @@ export default async function fetcher(
   path: string,
   options: Options
 ): Promise<unknown> {
-  const response = await fetch(`${API_HOSTNAME}/${path}`, {
+  const url = path === 'records' ? `${API_HOSTNAME}/records` : '';
+  const response = await fetch(url || `${API_HOSTNAME}/${path}`, {
     method: options.method || 'GET',
     headers: options.headers || HEADERS,
     body: options.payload ? JSON.stringify(options.payload) : undefined
