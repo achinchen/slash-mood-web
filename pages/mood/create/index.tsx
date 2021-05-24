@@ -1,10 +1,10 @@
 import { useState, ChangeEvent, useMemo, Fragment } from 'react';
 import Head from 'next/head';
-import { useQuery } from 'react-query';
+import Router from 'next/router';
 import cx from 'clsx';
 import { MOODS_MAP, MOODS, CATEGORIES_MAP, CATEGORIES } from 'constants/mood';
 import { Category, Mood } from 'types/mood';
-import query from 'utils/query';
+import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
 import IconButton from 'components/IconButton';
 import TextArea from 'components/TextArea';
@@ -17,7 +17,7 @@ function CreateMood(): JSX.Element {
   const [mood, setMood] = useState<Mood>();
   const [categories, setCategories] = useState<Category[]>([]);
   const [description, setDescription] = useState('');
-  const [fetchedError, setFetchedError] = useState('發生不明問題，請重試看看');
+  const [fetchedError, setFetchedError] = useState('');
 
   const payload = useMemo(
     () => ({
@@ -48,23 +48,18 @@ function CreateMood(): JSX.Element {
   const onDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
     setDescription(event.target.value);
 
-  const { isLoading, isError, refetch } = useQuery(
-    'records',
-    query('/records', { method: 'POST', payload }),
-    {
-      enabled: false,
-      retry: false,
-      onError: () => {
-        setFetchedError('發生不明問題，請重試看看');
-      },
-      onSuccess: () => {
-        setFetchedError('');
-        window.location.assign('/mood');
-      }
+  const { loading, fetcher } = useFetch({
+    fetchArgs: ['records', { method: 'POST', payload }],
+    onError: () => {
+      setFetchedError('發生不明問題，請重試看看');
+    },
+    onSuccess: () => {
+      setFetchedError('');
+      Router.replace('/mood');
     }
-  );
+  });
 
-  const onSubmit = () => refetch();
+  const onSubmit = () => fetcher();
 
   return (
     <>
@@ -133,17 +128,17 @@ function CreateMood(): JSX.Element {
           onChange={onDescriptionChange}
           maxLength={300}
         />
-        <div className={styles.error} hidden={!isError}>
+      </main>
+      <footer className={styles.bottom}>
+        <div className={styles.error} aria-hidden={!fetchedError}>
           <Emoji emoji="🥺" aria-label="Some error happened!" />
           {fetchedError}
         </div>
-      </main>
-      <footer className={styles.bottom}>
         <Button
           className={styles.submitButton}
           size="sm"
           color="dark"
-          disabled={!mood && isLoading}
+          disabled={!mood && loading}
           onClick={onSubmit}
         >
           完成
