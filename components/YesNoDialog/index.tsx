@@ -1,4 +1,4 @@
-import { useState, HTMLProps, FC } from 'react';
+import { useState, useEffect, HTMLProps, FC } from 'react';
 import ReactDOM from 'react-dom';
 import cx from 'clsx';
 import useESC from 'hooks/useESC';
@@ -7,6 +7,12 @@ import IconButton from 'components/IconButton';
 import Button from 'components/Button';
 import styles from './style.module.scss';
 import { PORTAL_ID } from 'pages/_app';
+
+const getPortalDom = () => {
+  const dialogDom = document.getElementById(PORTAL_ID) as HTMLElement;
+  if (dialogDom?.childElementCount) ReactDOM.unmountComponentAtNode(dialogDom);
+  return dialogDom;
+};
 
 interface Props extends HTMLProps<HTMLElement> {
   closed?: boolean;
@@ -33,6 +39,7 @@ const YesNoDialog: FC<Props> = ({
   title
 }) => {
   const [isClosed, seIsClosed] = useState(closed);
+  const [self, setSelf] = useState<HTMLElement>();
 
   const triggerClose = () => {
     seIsClosed(true);
@@ -51,7 +58,19 @@ const YesNoDialog: FC<Props> = ({
   useESC({ onClose: triggerClose });
   useActiveClose({ onClose: triggerClose, enabled: isActiveClose });
 
-  return (
+  useEffect(() => {
+    setSelf(getPortalDom());
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--overflow',
+      closed ? 'scroll' : 'hidden'
+    );
+  }, [closed]);
+
+  if (!self) return null;
+  return ReactDOM.createPortal(
     <div className={cx(styles.dialog)} aria-hidden={isClosed}>
       <div id="dialog-scrim" className={styles.dialogScrim} />
       <div
@@ -99,24 +118,9 @@ const YesNoDialog: FC<Props> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    self
   );
 };
 
 export default YesNoDialog;
-
-const mountComponentDetector = () => {
-  const dialogDom = document.getElementById(PORTAL_ID);
-  if (dialogDom?.childElementCount) ReactDOM.unmountComponentAtNode(dialogDom);
-  return dialogDom;
-};
-
-export const triggerYesNoDialog = (props: Props): void => {
-  const dialogDom = mountComponentDetector();
-
-  const { children, ...restProps } = props;
-  ReactDOM.render(
-    <YesNoDialog {...restProps}>{children}</YesNoDialog>,
-    dialogDom
-  );
-};
