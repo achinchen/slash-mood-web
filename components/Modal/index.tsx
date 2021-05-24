@@ -45,6 +45,13 @@ const Modal: FC<Props> = ({
     setSelf(getPortalDom());
   }, []);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--overflow',
+      closed ? 'scroll' : 'hidden'
+    );
+  }, [closed]);
+
   if (!self) return null;
 
   return ReactDOM.createPortal(
@@ -74,7 +81,6 @@ const Modal: FC<Props> = ({
         <div className={styles.dialogContent} id="dialog-content">
           {children}
         </div>
-        <div className={styles.dialogButton}></div>
       </div>
     </div>,
     self
@@ -82,16 +88,3 @@ const Modal: FC<Props> = ({
 };
 
 export default Modal;
-
-// export const triggerModal = (props: Props): void => {
-//   const dialogDom = mountComponentDetector();
-//   const { children, ...restProps } = props;
-//   ReactDOM.createPortal(
-//     <Modal {...restProps}>{children}</Modal>,
-//     dialogDom
-//   );
-//   ReactDOM.render(
-//     <Modal {...restProps}>{children}</Modal>,
-//     dialogDom
-//   );
-// };
