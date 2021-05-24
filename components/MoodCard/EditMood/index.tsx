@@ -1,19 +1,21 @@
 import { FC, ChangeEvent } from 'react';
+import Router from 'next/router';
 import cx from 'clsx';
+import useFetch from 'hooks/useFetch';
+import type { Record } from 'types/record';
 import Modal from 'components/Modal';
 import Button from 'components/Button';
 import TextArea from 'components/TextArea';
 import Emoji from 'components/Emoji';
 import { MOODS, CATEGORIES, MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
-import useMood, { Parameters } from '../hooks';
+import useMood from '../hooks';
 import styles from './style.module.scss';
 
 type Props = {
-  onUpdate: (payload: Parameters) => void;
   close?: () => void;
-} & Parameters;
+} & Omit<Record, 'createdTime'>;
 
-const EditMood: FC<Props> = ({ onUpdate, close, ...payload }) => {
+const EditMood: FC<Props> = ({ close, id, ...payload }) => {
   const {
     onMood,
     onCategories,
@@ -22,11 +24,23 @@ const EditMood: FC<Props> = ({ onUpdate, close, ...payload }) => {
     categories,
     description
   } = useMood(payload);
-  console.log(categories);
+
+  const { loading, fetcher } = useFetch({
+    fetchArgs: [
+      `records/${id}`,
+      {
+        method: 'PUT',
+        ...(payload && { payload })
+      }
+    ],
+    onSuccess: () => {
+      close?.();
+      Router.reload();
+    }
+  });
 
   const onSubmit = () => {
-    onUpdate({ mood, categories, description });
-    close?.();
+    fetcher();
   };
 
   return (
@@ -86,10 +100,9 @@ const EditMood: FC<Props> = ({ onUpdate, close, ...payload }) => {
         />
         <footer className={styles.bottom}>
           <Button
-            className={styles.submitButton}
             size="sm"
             color="dark"
-            disabled={!mood}
+            disabled={!mood || loading}
             onClick={onSubmit}
           >
             完成

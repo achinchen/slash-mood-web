@@ -7,12 +7,6 @@
   gap: 12px;
 }
 
-.title {
-  margin: 0;
-  font-weight: 400;
-}
-
-
 .main {
   position: relative;
   margin: 36px 0 24px;
@@ -21,7 +15,7 @@
 }
 
 .title {
-  margin: 0 0 12px;
+  margin: 0 0 4px;
   text-align: left;
   font-size: 1.6rem;
   font-weight: 400;
@@ -37,7 +31,7 @@
     will-change: opacity;
 
     &.unselected {
-      opacity: 0.6;
+      opacity: 0.3;
     }
     
     &Icon {
@@ -106,4 +100,9 @@
   border: 1px solid #9CABC2;
   border-radius: 8px;
   resize: none;
+}
+
+
+.bottom {
+  margin-top: 8px;
 }
