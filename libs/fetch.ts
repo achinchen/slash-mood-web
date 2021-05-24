@@ -5,7 +5,7 @@ type Options = {
   payload?: unknown;
 } & RequestInit;
 
-class FetchError extends Error {
+export class FetchError extends Error {
   constructor(public status: Response['status'], message?: string) {
     super(message);
   }
