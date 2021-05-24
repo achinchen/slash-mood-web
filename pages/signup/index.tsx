@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, Fragment } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Router from 'next/router';
-import fetch from 'libs/fetch';
+import useFetch from 'hooks/useFetch';
 import useEmail from 'hooks/useEmail';
 import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
@@ -12,7 +12,6 @@ import usePassword from 'hooks/usePassword';
 import useNickname from 'hooks/useNickname';
 
 function SignUp(): JSX.Element {
-  const [loading, setLoading] = useState(false);
   const recaptchaRef = useRef<HTMLDivElement>(null);
   const [finishedRecaptchaCallback, setFinishedRecaptchaCallback] = useState(
     false
@@ -55,21 +54,16 @@ function SignUp(): JSX.Element {
     [email, password, nickname]
   );
 
-  const onSubmit = async () => {
-    setLoading(true);
-
-    try {
-      await fetch('signup', { method: 'POST', payload });
-      console.log('before');
-      Router.replace('/mood');
-      console.log('after');
-    } catch ({ status }) {
+  const { loading, fetcher } = useFetch({
+    fetchArgs: ['signup', { method: 'POST', payload }],
+    onSuccess: () => Router.replace('/mood'),
+    onError: ({ status }) => {
       if (status === 409) duplicatedEmailHelper();
       // TODO: handle other validation error;
     }
+  });
 
-    setLoading(false);
-  };
+  const onSubmit = () => fetcher();
 
   useEffect(() => {
     window['onLoadRecaptcha'] = () => {

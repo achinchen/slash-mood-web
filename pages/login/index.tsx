@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import fetch from 'libs/fetch';
+import useFetch from 'hooks/useFetch';
 import useEmail from 'hooks/useEmail';
 import usePassword from 'hooks/usePassword';
 import Layout from 'components/Layout/Account';
@@ -11,7 +11,6 @@ import Emoji from 'components/Emoji';
 import styles from './style.module.scss';
 
 function Login(): JSX.Element {
-  const [loading, setLoading] = useState(false);
   const [fetchedError, setFetchedError] = useState('');
   const { email, setEmail, emailHelperText, onBlurEmail } = useEmail(
     'chin@achin.dev'
@@ -24,22 +23,18 @@ function Login(): JSX.Element {
     onBlurPassword
   } = usePassword('achin1234');
 
-  useEffect(() => {
-    setFetchedError('');
-  }, [email, password]);
-
   const passValidation =
     !!(email && password) && !(emailHelperText || passwordHelperText);
+
   const payload = useMemo(() => ({ email, password }), [email, password]);
 
-  const onSubmit = async () => {
-    setLoading(true);
-
-    try {
-      await fetch('login', { method: 'POST', payload });
+  const { loading, fetcher } = useFetch({
+    fetchArgs: ['login', { method: 'POST', payload }],
+    onSuccess: () => {
       setFetchedError('');
       Router.replace('/mood');
-    } catch ({ status }) {
+    },
+    onError: ({ status }) => {
       let error = '';
 
       switch (status) {
@@ -55,9 +50,13 @@ function Login(): JSX.Element {
 
       setFetchedError(error);
     }
+  });
 
-    setLoading(false);
-  };
+  const onSubmit = () => fetcher();
+
+  useEffect(() => {
+    setFetchedError('');
+  }, [email, password]);
 
   return (
     <Layout withCloseButton>
