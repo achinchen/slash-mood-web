@@ -18,7 +18,7 @@ const HEADERS = {
 
 export default async function fetcher(
   path: string,
-  options: Options
+  options: Options = {}
 ): Promise<unknown> {
   const url = path === 'records' ? `${API_HOSTNAME}/records` : '';
   const response = await fetch(url || `${API_HOSTNAME}/${path}`, {
