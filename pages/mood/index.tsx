@@ -1,16 +1,17 @@
 import { useRef, Fragment } from 'react';
-import Head from 'next/head';
-import Router from 'next/router';
-import { NextPage } from 'next';
+import type { NextPage } from 'next';
+import type { Record } from 'types/record';
 import { useSWRInfinite } from 'swr';
 import fetch from 'libs/fetch';
-import type { Record } from 'types/record';
+import BasicHead from 'seo/Head';
+import Emoji from 'components/Emoji';
 import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import MoodCard, {
   LoadingMoodCard,
   WithoutMoodCard
-} from 'components/MoodCard';
+} from 'views/Mood/MoodCard';
 import styles from './style.module.scss';
+import Link from 'next/link';
 
 type RecordsResponse = {
   records: Record[];
@@ -48,8 +49,6 @@ const Mood: NextPage<Props> = ({ initialData }) => {
     enabled: !isLoadingMore && !isReachingEnd
   });
 
-  const addMood = () => Router.replace('/mood/create');
-
   const onMutate = (page: number, index: number) => (
     updatedRecord?: Record
   ) => {
@@ -68,10 +67,15 @@ const Mood: NextPage<Props> = ({ initialData }) => {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <BasicHead title="日日安" />
+      <h1 className={styles.title}>你好，今天辛苦了。</h1>
+      <h2 className={styles.subtitle}>
+        {`不論是開心、難過、悲傷，情緒就像是流水一樣，會來訪也會離開。
+        請讓我們以紀錄代替標籤情緒好與壞 `}
+        <Emoji aria-label="pencil" emoji="✏️" />
+        <br />
+        那麼，<Link href="/mood/create">現在的你心情是什麼呢？</Link>
+      </h2>
       {isEmpty ? (
         <WithoutMoodCard />
       ) : (
@@ -91,13 +95,6 @@ const Mood: NextPage<Props> = ({ initialData }) => {
         </main>
       )}
       <div className={styles.loadMoreRef} ref={loadMoreButtonRef} />
-      <button className={styles.addMoodButton} onClick={addMood}>
-        <img
-          className={styles.addMoodButtonIcon}
-          src="/images/icon/plus.svg"
-          alt="增加心情紀錄"
-        />
-      </button>
     </div>
   );
 };

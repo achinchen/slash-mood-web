@@ -1,61 +1,49 @@
-import { useState, ChangeEvent, useMemo, Fragment } from 'react';
-import Head from 'next/head';
-import Router from 'next/router';
+import { useState, Fragment, ChangeEvent } from 'react';
 import cx from 'clsx';
 import { MOODS_MAP, MOODS, CATEGORIES_MAP, CATEGORIES } from 'constants/mood';
-import { Category, Mood } from 'types/mood';
+import BasicHead from 'seo/Head';
 import useFetch from 'hooks/useFetch';
+import useMood from 'hooks/useMood';
 import Button from 'components/Button';
 import IconButton from 'components/IconButton';
 import TextArea from 'components/TextArea';
 import Emoji from 'components/Emoji';
 import styles from './style.module.scss';
 
-const MAXIMUM_CATEGORIES = 2;
-
 function CreateMood(): JSX.Element {
-  const [mood, setMood] = useState<Mood>();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [description, setDescription] = useState('');
   const [fetchedError, setFetchedError] = useState('');
 
-  const payload = useMemo(
-    () => ({
-      mood,
-      categories,
-      description
-    }),
-    [mood, categories, description]
-  );
+  const {
+    onMood,
+    onCategories,
+    onDescription,
+    mood,
+    categories,
+    description
+  } = useMood();
 
   const moodLabel = mood ? MOODS_MAP[mood] : ' ___ ';
 
   const onClose = () => window.history.go(-1);
 
-  const selectMood = (mood: Mood) => () => setMood(mood);
-
-  const selectCategory = (category: Category) => () => {
-    setCategories((categories) => {
-      if (categories.includes(category))
-        return categories.filter(
-          (currentCategory) => currentCategory !== category
-        );
-      if (categories.length > MAXIMUM_CATEGORIES) return categories;
-      return [...categories, category];
-    });
-  };
-
-  const onDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
-    setDescription(event.target.value);
-
   const { loading, fetcher } = useFetch({
-    fetchArgs: ['records', { method: 'POST', payload }],
+    fetchArgs: [
+      'records',
+      {
+        method: 'POST',
+        payload: {
+          mood,
+          categories,
+          description
+        }
+      }
+    ],
     onError: () => {
       setFetchedError('發生不明問題，請重試看看');
     },
     onSuccess: () => {
       setFetchedError('');
-      Router.replace('/mood');
+      window.location.replace('/mood');
     }
   });
 
@@ -63,10 +51,7 @@ function CreateMood(): JSX.Element {
 
   return (
     <>
-      <Head>
-        <title>Add Mood Log</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <BasicHead title="今天心情是什麼呢？" />
       <header className={styles.header}>
         <IconButton
           icon="close"
@@ -84,7 +69,7 @@ function CreateMood(): JSX.Element {
               className={cx(styles.moodButton, {
                 [styles.unselected]: mood && mood !== m
               })}
-              onClick={selectMood(m)}
+              onClick={() => onMood(m)}
             >
               <img
                 className={styles.moodButtonIcon}
@@ -108,7 +93,7 @@ function CreateMood(): JSX.Element {
               className={cx(styles.categoryItem, {
                 [styles.selected]: categories.includes(category)
               })}
-              onClick={selectCategory(category)}
+              onClick={() => onCategories(category)}
               disabled={!mood}
             >
               <Fragment>
@@ -125,7 +110,9 @@ function CreateMood(): JSX.Element {
         <h3 className={styles.title}>Notes</h3>
         <TextArea
           value={description}
-          onChange={onDescriptionChange}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            onDescription(e.target.value)
+          }
           maxLength={300}
         />
       </main>
