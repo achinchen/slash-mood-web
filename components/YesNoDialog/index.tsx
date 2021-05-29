@@ -1,18 +1,12 @@
 import { useState, useEffect, HTMLProps, FC } from 'react';
 import ReactDOM from 'react-dom';
 import cx from 'clsx';
+import usePortal from 'hooks/usePortal';
 import useESC from 'hooks/useESC';
 import useActiveClose from 'hooks/useActiveClose';
 import IconButton from 'components/IconButton';
 import Button from 'components/Button';
 import styles from './style.module.scss';
-import { PORTAL_ID } from 'pages/_app';
-
-const getPortalDom = () => {
-  const dialogDom = document.getElementById(PORTAL_ID) as HTMLElement;
-  if (dialogDom?.childElementCount) ReactDOM.unmountComponentAtNode(dialogDom);
-  return dialogDom;
-};
 
 interface Props extends HTMLProps<HTMLElement> {
   closed?: boolean;
@@ -39,7 +33,6 @@ const YesNoDialog: FC<Props> = ({
   title
 }) => {
   const [isClosed, seIsClosed] = useState(closed);
-  const [self, setSelf] = useState<HTMLElement>();
 
   const triggerClose = () => {
     seIsClosed(true);
@@ -57,10 +50,7 @@ const YesNoDialog: FC<Props> = ({
 
   useESC({ onClose: triggerClose });
   useActiveClose({ onClose: triggerClose, enabled: isActiveClose });
-
-  useEffect(() => {
-    setSelf(getPortalDom());
-  }, []);
+  const target = usePortal({ closed: isClosed });
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -69,7 +59,6 @@ const YesNoDialog: FC<Props> = ({
     );
   }, [closed]);
 
-  if (!self) return null;
   return ReactDOM.createPortal(
     <div className={cx(styles.dialog)} aria-hidden={isClosed}>
       <div id="dialog-scrim" className={styles.dialogScrim} />
@@ -119,7 +108,7 @@ const YesNoDialog: FC<Props> = ({
         </div>
       </div>
     </div>,
-    self
+    target
   );
 };
 
