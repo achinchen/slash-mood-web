@@ -7,7 +7,7 @@ import Button from 'components/Button';
 import TextArea from 'components/TextArea';
 import Emoji from 'components/Emoji';
 import { MOODS, CATEGORIES, MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
-import useMood from '../hooks';
+import useMood from 'hooks/useMood';
 import styles from './style.module.scss';
 
 type Props = {
