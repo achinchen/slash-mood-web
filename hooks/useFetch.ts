@@ -12,7 +12,7 @@ type Return = {
   fetcher: () => Promise<void>;
 };
 
-const useFetch = ({ fetchArgs, onSuccess, onError }: Parameter): Return => {
+function useFetch({ fetchArgs, onSuccess, onError }: Parameter): Return {
   const [loading, setLoading] = useState(false);
 
   const fetcher = async () => {
@@ -28,6 +28,6 @@ const useFetch = ({ fetchArgs, onSuccess, onError }: Parameter): Return => {
   };
 
   return { loading, fetcher };
-};
+}
 
 export default useFetch;
