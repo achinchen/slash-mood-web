@@ -17,20 +17,23 @@ type RecordsResponse = {
   hasNext: boolean;
 };
 
-type Props = { props: RecordsResponse | undefined };
+type Props = { initialData?: RecordsResponse };
 
-const Mood: NextPage<Props> = ({ props }) => {
+const getKey = (index: number, previous?: unknown) => {
+  const previousData = previous as RecordsResponse;
+  if (previousData && !previousData?.hasNext) return null;
+  return `records?page=${index + 1}`;
+};
+
+const Mood: NextPage<Props> = ({ initialData }) => {
   const loadMoreButtonRef = useRef<HTMLDivElement>(null);
 
-  const { data, error, size, mutate, setSize } = useSWRInfinite(
-    (index) => `records?page=${index + (props ? 2 : 1)}`,
-    fetch,
-    {
-      initialData: props && [props]
-    }
-  );
+  const { data, error, mutate, size, setSize } = useSWRInfinite(getKey, fetch, {
+    initialData: initialData && [initialData]
+  });
 
   const records = data as RecordsResponse[];
+
   const isLoadingInitialData = !records && !error;
   const isLoadingMore =
     isLoadingInitialData ||
@@ -47,14 +50,21 @@ const Mood: NextPage<Props> = ({ props }) => {
 
   const addMood = () => Router.replace('/mood/create');
 
-  const onMutate = (page, updatedRecord) => {
-    // mutate('/records', async records => {
-    //    const filteredTodos = todos.filter(todo => todo.id !== '1')
-    //   return [...filteredTodos, updatedTodo]
-    // })
-  
-  }  
+  const onMutate = (page: number, index: number) => (
+    updatedRecord?: Record
+  ) => {
+    const updatedRecordResponse = records;
+    const currentPageRecordsResponse = updatedRecordResponse[page];
 
+    const updatedRecords = [...currentPageRecordsResponse.records];
+    if (updatedRecord) {
+      updatedRecords[index] = updatedRecord;
+    } else {
+      updatedRecords.splice(index, 1);
+    }
+    updatedRecordResponse[page].records = updatedRecords;
+    mutate(updatedRecordResponse, true);
+  };
 
   return (
     <div className={styles.container}>
@@ -66,15 +76,18 @@ const Mood: NextPage<Props> = ({ props }) => {
         <WithoutMoodCard />
       ) : (
         <main className={styles.main}>
-          {records.map(({ records }, index) => (
-            <Fragment key={`page-${index}`}>
-              {records.map((record) => {
-                return <MoodCard {...record} key={record.id} />;
-              })}
+          {records?.map(({ records }, page) => (
+            <Fragment key={`page-${page}`}>
+              {records.map((record, index) => (
+                <MoodCard
+                  {...record}
+                  onUpdate={onMutate(page, index)}
+                  key={`${record.id}-${record.updatedTime}`}
+                />
+              ))}
             </Fragment>
           ))}
-
-          {!isLoadingMore && <LoadingMoodCard />}
+          {isLoadingMore && <LoadingMoodCard />}
         </main>
       )}
       <div className={styles.loadMoreRef} ref={loadMoreButtonRef} />
@@ -93,9 +106,9 @@ Mood.getInitialProps = async () => {
   try {
     const result = await fetch('records?page=1');
     if (result instanceof Error) throw result;
-    return { props: result as RecordsResponse };
+    return { initialData: result as RecordsResponse };
   } catch (e) {
-    return { props: undefined };
+    return { initialData: undefined };
   }
 };
 

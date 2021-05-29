@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import cx from 'clsx';
 import useFetch from 'hooks/useFetch';
@@ -11,26 +11,36 @@ import { getDateTime } from 'utils';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
-type Props = Record;
+type Props = {
+  onUpdate: (updatedRecord?: Record) => void;
+} & Record;
 
 const MoodCard: FC<Props> = ({
   id,
   mood,
   categories,
   description,
-  createdTime
+  createdTime,
+  updatedTime,
+  onUpdate
 }) => {
   const date = getDateTime(new Date(createdTime));
   const [mode, setMode] = useState<'edit' | 'delete' | undefined>();
 
   const { loading, fetcher } = useFetch({
     fetchArgs: [`records/${id}`, { method: 'DELETE' }],
-    onSuccess: () => window.location.reload()
+    onSuccess: () => {
+      onUpdate(undefined);
+    }
   });
+
+  useEffect(() => {
+    setMode(undefined);
+  }, [updatedTime]);
 
   return (
     <>
-      <section key={id} className={styles.card}>
+      <section className={styles.card}>
         <img
           className={styles.mood}
           src={`/images/mood/${mood}.svg`}
@@ -68,6 +78,7 @@ const MoodCard: FC<Props> = ({
           mood={mood}
           categories={categories}
           description={description}
+          onUpdate={onUpdate}
         />
       )}
     </>

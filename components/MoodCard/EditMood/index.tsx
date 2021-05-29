@@ -1,5 +1,4 @@
 import { FC, ChangeEvent } from 'react';
-import Router from 'next/router';
 import cx from 'clsx';
 import useFetch from 'hooks/useFetch';
 import type { Record } from 'types/record';
@@ -13,9 +12,10 @@ import styles from './style.module.scss';
 
 type Props = {
   close?: () => void;
-} & Omit<Record, 'createdTime'>;
+  onUpdate: (record: Record) => void;
+} & Omit<Omit<Record, 'createdTime'>, 'updatedTime'>;
 
-const EditMood: FC<Props> = ({ close, id, ...payload }) => {
+const EditMood: FC<Props> = ({ onUpdate, close, id, ...payload }) => {
   const {
     onMood,
     onCategories,
@@ -30,87 +30,91 @@ const EditMood: FC<Props> = ({ close, id, ...payload }) => {
       `records/${id}`,
       {
         method: 'PUT',
-        ...(payload && { payload })
+        payload: {
+          mood,
+          categories,
+          description
+        }
       }
     ],
-    onSuccess: () => {
+    onSuccess: (record) => {
+      onUpdate(record as Record);
       close?.();
-      Router.reload();
     }
   });
 
-  const onSubmit = () => {
-    fetcher();
-  };
-
   return (
-    <Modal>
-      <>
-        <h3 className={styles.title}>心情</h3>
-        <section className={styles.mood}>
-          {MOODS.map((m) => (
-            <button
-              key={m}
-              className={cx(styles.moodButton, {
-                [styles.unselected]: mood && mood !== m
-              })}
-              onClick={() => onMood(m)}
-            >
-              <img
-                className={styles.moodButtonIcon}
-                src={`/images/mood/${m}.svg`}
-                alt={`${MOODS_MAP[m]}的心情`}
-              />
-            </button>
-          ))}
-        </section>
-        <h3 className={styles.title}>
-          跟什麼相關
-          <span className={styles.categoryRest}>{`(${
-            3 - categories.length
-          })`}</span>
-        </h3>
-        <section className={styles.category}>
-          {CATEGORIES.map((category) => (
-            <Button
-              key={category}
-              color="light"
-              className={cx(styles.categoryItem, {
-                [styles.selected]: categories.includes(category)
-              })}
-              onClick={() => onCategories(category)}
-              disabled={!mood}
-            >
-              <Emoji
-                className={styles.categoryButtonIcon}
-                aria-label={CATEGORIES_MAP[category].label}
-                emoji={CATEGORIES_MAP[category].emoji}
-              />
-              {CATEGORIES_MAP[category].label}
-            </Button>
-          ))}
-        </section>
-        <h3 className={styles.title}>Notes</h3>
-        <TextArea
-          value={description}
-          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-            onDescription(e.target.value)
-          }
-          maxLength={300}
-        />
-        <footer className={styles.bottom}>
-          <Button
-            size="sm"
-            color="dark"
-            disabled={!mood || loading}
-            onClick={onSubmit}
+    <>
+      <h3 className={styles.title}>心情</h3>
+      <section className={styles.mood}>
+        {MOODS.map((m) => (
+          <button
+            key={m}
+            className={cx(styles.moodButton, {
+              [styles.unselected]: mood && mood !== m
+            })}
+            onClick={() => onMood(m)}
           >
-            完成
+            <img
+              className={styles.moodButtonIcon}
+              src={`/images/mood/${m}.svg`}
+              alt={`${MOODS_MAP[m]}的心情`}
+            />
+          </button>
+        ))}
+      </section>
+      <h3 className={styles.title}>
+        跟什麼相關
+        <span className={styles.categoryRest}>{`(${
+          3 - categories.length
+        })`}</span>
+      </h3>
+      <section className={styles.category}>
+        {CATEGORIES.map((category) => (
+          <Button
+            key={category}
+            color="light"
+            className={cx(styles.categoryItem, {
+              [styles.selected]: categories.includes(category)
+            })}
+            onClick={() => onCategories(category)}
+            disabled={!mood}
+          >
+            <Emoji
+              className={styles.categoryButtonIcon}
+              aria-label={CATEGORIES_MAP[category].label}
+              emoji={CATEGORIES_MAP[category].emoji}
+            />
+            {CATEGORIES_MAP[category].label}
           </Button>
-        </footer>
-      </>
-    </Modal>
+        ))}
+      </section>
+      <h3 className={styles.title}>Notes</h3>
+      <TextArea
+        value={description}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          onDescription(e.target.value)
+        }
+        maxLength={300}
+      />
+      <footer className={styles.bottom}>
+        <Button
+          size="sm"
+          color="dark"
+          disabled={!mood || loading}
+          onClick={fetcher}
+        >
+          完成
+        </Button>
+      </footer>
+    </>
   );
 };
 
-export default EditMood;
+const EditMoodModal: FC<Props> = (props) => (
+  <Modal>
+    <EditMood {...props} />
+  </Modal>
+);
+
+export default EditMoodModal;
