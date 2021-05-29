@@ -22,13 +22,19 @@
     left: 50%;
     top: 0;
     transform: translateX(-50%);
-    margin: 10vh auto;
+    margin: 5vh auto;
     min-width: 240px;
-    max-height: 80vh;
+    max-height: 90vh;
     max-width: 90vw;
     background: white;
     padding: 20px;
     border-radius: 8px;
+    overflow-y: scroll;
+
+    @include media(tablet) {
+      margin: 10vh auto;
+      max-height: 80vh;
+    }
   }
 
   &Title {
@@ -46,15 +52,5 @@
   &Content {
     margin-block-end: 16px;
     font-size: 1.4rem;
-  }
-
-  &Button {
-    text-align: right;
-
-    &Item {
-      &:not(:last-child) {
-        margin-right: 8px;
-      }
-    }
   }
 }

@@ -10,6 +10,7 @@
 
   @include media(landscape) {
     min-height: 600px;
+    max-width: 480px;
     border-color: color(gray-dark);
   }
 }

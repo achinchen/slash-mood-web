@@ -1,11 +1,18 @@
-import { useState, HTMLProps, FC, ReactElement, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import {
+  useState,
+  useRef,
+  HTMLProps,
+  cloneElement,
+  FC,
+  ReactElement
+} from 'react';
+import ReactDom from 'react-dom';
 import cx from 'clsx';
 import useESC from 'hooks/useESC';
 import useActiveClose from 'hooks/useActiveClose';
+import usePortal from 'hooks/usePortal';
 import IconButton from 'components/IconButton';
 import styles from './style.module.scss';
-import { PORTAL_ID } from 'pages/_app';
 
 interface Props extends HTMLProps<HTMLElement> {
   closed?: boolean;
@@ -17,12 +24,6 @@ interface Props extends HTMLProps<HTMLElement> {
   title?: string;
 }
 
-const getPortalDom = () => {
-  const dialogDom = document.getElementById(PORTAL_ID) as HTMLElement;
-  if (dialogDom?.childElementCount) ReactDOM.unmountComponentAtNode(dialogDom);
-  return dialogDom;
-};
-
 const Modal: FC<Props> = ({
   closed = false,
   children,
@@ -32,7 +33,7 @@ const Modal: FC<Props> = ({
   title
 }) => {
   const [isClosed, seIsClosed] = useState(closed);
-  const [self, setSelf] = useState<HTMLElement>();
+  const self = useRef<HTMLDivElement>(null);
 
   const triggerClose = () => {
     seIsClosed(true);
@@ -41,14 +42,10 @@ const Modal: FC<Props> = ({
 
   useESC({ onClose: triggerClose });
   useActiveClose({ onClose: triggerClose, enabled: isActiveClose });
-  useEffect(() => {
-    setSelf(getPortalDom());
-  }, []);
+  const target = usePortal({ closed: isClosed });
 
-  if (!self) return null;
-
-  return ReactDOM.createPortal(
-    <div className={cx(styles.dialog)} aria-hidden={isClosed}>
+  return ReactDom.createPortal(
+    <div className={cx(styles.dialog)} aria-hidden={isClosed} ref={self}>
       <div id="dialog-scrim" className={styles.dialogScrim} />
       <div
         className={styles.dialogRoot}
@@ -72,26 +69,12 @@ const Modal: FC<Props> = ({
           />
         )}
         <div className={styles.dialogContent} id="dialog-content">
-          {children}
+          {cloneElement(children, { close: triggerClose })}
         </div>
-        <div className={styles.dialogButton}></div>
       </div>
     </div>,
-    self
+    target
   );
 };
 
 export default Modal;
-
-// export const triggerModal = (props: Props): void => {
-//   const dialogDom = mountComponentDetector();
-//   const { children, ...restProps } = props;
-//   ReactDOM.createPortal(
-//     <Modal {...restProps}>{children}</Modal>,
-//     dialogDom
-//   );
-//   ReactDOM.render(
-//     <Modal {...restProps}>{children}</Modal>,
-//     dialogDom
-//   );
-// };

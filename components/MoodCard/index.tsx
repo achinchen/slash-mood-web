@@ -1,80 +1,46 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import cx from 'clsx';
-import { useQuery } from 'react-query';
+import useFetch from 'hooks/useFetch';
 import Emoji from 'components/Emoji';
 import Menu from 'components/Menu';
 import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
-import { triggerYesNoDialog } from 'components/YesNoDialog';
-import Modal from 'components/Modal';
+import YesNoDialog from 'components/YesNoDialog';
 import EditMood from './EditMood';
-import { Parameters } from './hooks';
 import { getDateTime } from 'utils';
-import query from 'utils/query';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
-type Props = Record;
+type Props = {
+  onUpdate: (updatedRecord?: Record) => void;
+} & Record;
 
 const MoodCard: FC<Props> = ({
   id,
   mood,
   categories,
   description,
-  createdTime
+  createdTime,
+  updatedTime,
+  onUpdate
 }) => {
   const date = getDateTime(new Date(createdTime));
   const [mode, setMode] = useState<'edit' | 'delete' | undefined>();
-  const [payload, setPayload] = useState<Parameters>({
-    mood,
-    categories,
-    description
+
+  const { loading, fetcher } = useFetch({
+    fetchArgs: [`records/${id}`, { method: 'DELETE' }],
+    onSuccess: () => {
+      onUpdate(undefined);
+    }
   });
 
-  const { isLoading: deleteRequestLoading, refetch: deleteRecord } = useQuery(
-    `deleteRecord-${id}`,
-    query(`/records/${id}`, { method: 'DELETE' }),
-    {
-      enabled: false,
-      retry: false,
-      onSuccess: () => window.location.reload()
-    }
-  );
-
-  const onDelete = () => {
-    triggerYesNoDialog({
-      withCancel: true,
-      isActiveClose: true,
-      children: `確認刪除 ${date} 紀錄嗎？`,
-      onConfirm: deleteRecord
-    });
-  };
-
-  const { isLoading: updateRequestLoading, refetch: updateRecord } = useQuery(
-    `updateRecord-${id}`,
-    query(`/records/${id}`, {
-      method: 'PUT',
-      ...(payload && { payload })
-    }),
-    {
-      enabled: false,
-      retry: false,
-      onSuccess: () => window.location.reload()
-    }
-  );
-
-  const onUpdate = async (payload: Parameters) => {
-    setPayload(payload);
-    updateRecord();
-  };
-
-  const onEdit = () => {
-    setMode('edit');
-  };
+  useEffect(() => {
+    setMode(undefined);
+  }, [updatedTime]);
 
   return (
     <>
-      <section key={id} className={styles.card}>
+      <section className={styles.card}>
         <img
           className={styles.mood}
           src={`/images/mood/${mood}.svg`}
@@ -96,12 +62,25 @@ const MoodCard: FC<Props> = ({
           menuLabel="編輯功能選單"
           editLabel="編輯心情紀錄"
           deleteLabel="刪除心情紀錄"
-          onEdit={onEdit}
-          disabled={deleteRequestLoading || updateRequestLoading}
-          onDelete={onDelete}
+          onEdit={() => setMode('edit')}
+          onDelete={() => setMode('delete')}
+          disabled={loading}
         />
       </section>
-      {mode === 'edit' && <EditMood {...payload} onUpdate={onUpdate} />}
+      {mode === 'delete' && (
+        <YesNoDialog withCancel isActiveClose onConfirm={fetcher}>
+          {`確認刪除 ${date} 紀錄嗎？`}
+        </YesNoDialog>
+      )}
+      {mode === 'edit' && (
+        <EditMood
+          id={id}
+          mood={mood}
+          categories={categories}
+          description={description}
+          onUpdate={onUpdate}
+        />
+      )}
     </>
   );
 };

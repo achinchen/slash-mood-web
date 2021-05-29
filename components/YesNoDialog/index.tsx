@@ -1,12 +1,12 @@
-import { useState, HTMLProps, FC } from 'react';
+import { useState, useEffect, HTMLProps, FC } from 'react';
 import ReactDOM from 'react-dom';
 import cx from 'clsx';
+import usePortal from 'hooks/usePortal';
 import useESC from 'hooks/useESC';
 import useActiveClose from 'hooks/useActiveClose';
 import IconButton from 'components/IconButton';
 import Button from 'components/Button';
 import styles from './style.module.scss';
-import { PORTAL_ID } from 'pages/_app';
 
 interface Props extends HTMLProps<HTMLElement> {
   closed?: boolean;
@@ -50,8 +50,16 @@ const YesNoDialog: FC<Props> = ({
 
   useESC({ onClose: triggerClose });
   useActiveClose({ onClose: triggerClose, enabled: isActiveClose });
+  const target = usePortal({ closed: isClosed });
 
-  return (
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--overflow',
+      closed ? 'scroll' : 'hidden'
+    );
+  }, [closed]);
+
+  return ReactDOM.createPortal(
     <div className={cx(styles.dialog)} aria-hidden={isClosed}>
       <div id="dialog-scrim" className={styles.dialogScrim} />
       <div
@@ -99,24 +107,9 @@ const YesNoDialog: FC<Props> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    target
   );
 };
 
 export default YesNoDialog;
-
-const mountComponentDetector = () => {
-  const dialogDom = document.getElementById(PORTAL_ID);
-  if (dialogDom?.childElementCount) ReactDOM.unmountComponentAtNode(dialogDom);
-  return dialogDom;
-};
-
-export const triggerYesNoDialog = (props: Props): void => {
-  const dialogDom = mountComponentDetector();
-
-  const { children, ...restProps } = props;
-  ReactDOM.render(
-    <YesNoDialog {...restProps}>{children}</YesNoDialog>,
-    dialogDom
-  );
-};

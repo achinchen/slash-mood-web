@@ -13,6 +13,10 @@ html {
   font-size: 10px;
 }
 
+:root {
+  --overflow: scroll;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeSpeed;
@@ -21,6 +25,7 @@ body {
   max-width: 400px;
   margin: auto;
   color: color(black);
+  overflow: var(--overflow);
 
   @include media(tablet) {
     max-width: 500px;

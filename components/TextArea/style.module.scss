@@ -21,12 +21,16 @@
   }
 
   &Input {
-    height: 100px;
+    height: 60px;
     width: 100%;
     padding: 12px;
     border: 1px solid color(gray-light);
     border-radius: 8px;
     resize: none;
+
+    @include media(tablet) {
+      height: 100px;
+    }
 
     &.invalid {
       border-color: red;

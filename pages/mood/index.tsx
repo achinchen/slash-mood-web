@@ -1,10 +1,10 @@
-import { useRef, useMemo, Fragment } from 'react';
+import { useRef, Fragment } from 'react';
 import Head from 'next/head';
+import Router from 'next/router';
 import { NextPage } from 'next';
-import { useQueryClient, useInfiniteQuery } from 'react-query';
-import { paginationQuery, fetchInitialData } from 'utils/query';
-import { getDateString } from 'utils';
-import { Record, PaginationResult } from 'types/record';
+import { useSWRInfinite } from 'swr';
+import fetch from 'libs/fetch';
+import type { Record } from 'types/record';
 import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import MoodCard, {
   LoadingMoodCard,
@@ -12,60 +12,59 @@ import MoodCard, {
 } from 'components/MoodCard';
 import styles from './style.module.scss';
 
-type Records = { records: Record[]; date: string } & PaginationResult;
-type CacheRecords = {
-  pageParams: number[] | undefined[];
-  pages: Records[];
+type RecordsResponse = {
+  records: Record[];
+  hasNext: boolean;
 };
-type Props = { props: Records | undefined };
 
-const Mood: NextPage<Props> = ({ props }) => {
+type Props = { initialData?: RecordsResponse };
+
+const getKey = (index: number, previous?: unknown) => {
+  const previousData = previous as RecordsResponse;
+  if (previousData && !previousData?.hasNext) return null;
+  return `records?page=${index + 1}`;
+};
+
+const Mood: NextPage<Props> = ({ initialData }) => {
   const loadMoreButtonRef = useRef<HTMLDivElement>(null);
 
-  const dateString = getDateString(new Date());
-  const queryClient = useQueryClient();
+  const { data, error, mutate, size, setSize } = useSWRInfinite(getKey, fetch, {
+    initialData: initialData && [initialData]
+  });
 
-  const initialDataFromCache = useMemo(() => {
-    const cacheRecords = queryClient.getQueryData(['record', dateString]) as
-      | CacheRecords
-      | undefined;
-    if (cacheRecords) return cacheRecords;
+  const records = data as RecordsResponse[];
 
-    if (props)
-      return {
-        pages: [props],
-        pageParams: [1]
-      };
-  }, [props, dateString, queryClient]);
-
-  const queryRecords = paginationQuery(`/records`);
-
-  const {
-    data,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage
-  } = useInfiniteQuery<PaginationResult & { records: Record[] }, Error>(
-    ['record', dateString],
-    queryRecords,
-    {
-      retry: 0,
-      initialData: initialDataFromCache,
-      getNextPageParam: (lastPage) => lastPage && lastPage.nextPage,
-      enabled:
-        !initialDataFromCache ||
-        !!initialDataFromCache.pages[initialDataFromCache.pages.length - 1]
-          .nextPage
-    }
-  );
+  const isLoadingInitialData = !records && !error;
+  const isLoadingMore =
+    isLoadingInitialData ||
+    (size > 0 && records && typeof records[size - 1] === 'undefined');
+  const isEmpty = !records?.length;
+  const hasNextPage = records?.[size - 1]?.hasNext;
+  const isReachingEnd = isEmpty || !hasNextPage;
 
   useIntersectionObserver({
     targetRef: loadMoreButtonRef,
-    onIntersect: fetchNextPage,
-    enabled: hasNextPage && !isFetchingNextPage
+    onIntersect: () => setSize(size + 1),
+    enabled: !isLoadingMore && !isReachingEnd
   });
 
-  const addMood = () => window.location.assign('/mood/create');
+  const addMood = () => Router.replace('/mood/create');
+
+  const onMutate = (page: number, index: number) => (
+    updatedRecord?: Record
+  ) => {
+    const updatedRecordResponse = records;
+    const currentPageRecordsResponse = updatedRecordResponse[page];
+
+    const updatedRecords = [...currentPageRecordsResponse.records];
+    if (updatedRecord) {
+      updatedRecords[index] = updatedRecord;
+    } else {
+      updatedRecords.splice(index, 1);
+    }
+    updatedRecordResponse[page].records = updatedRecords;
+    mutate(updatedRecordResponse, true);
+  };
 
   return (
     <div className={styles.container}>
@@ -73,17 +72,24 @@ const Mood: NextPage<Props> = ({ props }) => {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        {data?.pages.map(({ page, records }) => (
-          <Fragment key={`page-${page}`}>
-            {records.map((record) => {
-              return <MoodCard {...record} key={record.id} />;
-            })}
-          </Fragment>
-        ))}
-        {isFetchingNextPage && <LoadingMoodCard />}
-      </main>
-      {!data?.pages[0].records.length && <WithoutMoodCard />}
+      {isEmpty ? (
+        <WithoutMoodCard />
+      ) : (
+        <main className={styles.main}>
+          {records?.map(({ records }, page) => (
+            <Fragment key={`page-${page}`}>
+              {records.map((record, index) => (
+                <MoodCard
+                  {...record}
+                  onUpdate={onMutate(page, index)}
+                  key={`${record.id}-${record.updatedTime}`}
+                />
+              ))}
+            </Fragment>
+          ))}
+          {isLoadingMore && <LoadingMoodCard />}
+        </main>
+      )}
       <div className={styles.loadMoreRef} ref={loadMoreButtonRef} />
       <button className={styles.addMoodButton} onClick={addMood}>
         <img
@@ -97,14 +103,12 @@ const Mood: NextPage<Props> = ({ props }) => {
 };
 
 Mood.getInitialProps = async () => {
-  const date = getDateString(new Date());
   try {
-    const result = await fetchInitialData(`/records?date=${date}`);
+    const result = await fetch('records?page=1');
     if (result instanceof Error) throw result;
-
-    return { props: result as Records };
+    return { initialData: result as RecordsResponse };
   } catch (e) {
-    return { props: undefined };
+    return { initialData: undefined };
   }
 };
 

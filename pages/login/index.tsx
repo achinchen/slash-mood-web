@@ -1,9 +1,9 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useQuery } from 'react-query';
+import Router from 'next/router';
+import useFetch from 'hooks/useFetch';
 import useEmail from 'hooks/useEmail';
 import usePassword from 'hooks/usePassword';
-import query from 'utils/query';
 import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
@@ -23,39 +23,40 @@ function Login(): JSX.Element {
     onBlurPassword
   } = usePassword('achin1234');
 
-  const passValidation = !(emailHelperText || passwordHelperText);
+  const passValidation =
+    !!(email && password) && !(emailHelperText || passwordHelperText);
+
   const payload = useMemo(() => ({ email, password }), [email, password]);
 
-  const { isLoading, isError, refetch } = useQuery(
-    'login',
-    query('/login', { method: 'POST', payload }),
-    {
-      enabled: false,
-      retry: false,
-      onError: ({ status }) => {
-        let error = '';
+  const { loading, fetcher } = useFetch({
+    fetchArgs: ['login', { method: 'POST', payload }],
+    onSuccess: () => {
+      setFetchedError('');
+      Router.replace('/mood');
+    },
+    onError: ({ status }) => {
+      let error = '';
 
-        switch (status) {
-          case 404:
-            error = '當前的 Email 不存在';
-            break;
-          case 401:
-            error = 'Email 或密碼有誤，請再試試';
-            break;
-          default:
-            error = '發生不明問題，請重試看看';
-        }
-
-        setFetchedError(error);
-      },
-      onSuccess: () => {
-        setFetchedError('');
-        window.location.assign('/mood');
+      switch (status) {
+        case 404:
+          error = '當前的 Email 不存在';
+          break;
+        case 401:
+          error = 'Email 或密碼有誤，請再試試';
+          break;
+        default:
+          error = '發生不明問題，請重試看看';
       }
-    }
-  );
 
-  const onSubmit = () => refetch();
+      setFetchedError(error);
+    }
+  });
+
+  const onSubmit = () => fetcher();
+
+  useEffect(() => {
+    setFetchedError('');
+  }, [email, password]);
 
   return (
     <Layout withCloseButton>
@@ -85,15 +86,16 @@ function Login(): JSX.Element {
             autoComplete="current-password"
           />
         </form>
-        <div className={styles.error} hidden={!isError}>
+        <div className={styles.error} aria-hidden={!fetchedError}>
           <Emoji emoji="🥺" aria-label="Some error happened!" />
           {fetchedError}
         </div>
         <footer className={styles.footer}>
           <Button
             color="dark"
+            size="lg"
             fullwidth
-            disabled={!passValidation || isLoading}
+            disabled={!passValidation || loading || !!fetchedError}
             onClick={onSubmit}
           >
             登入

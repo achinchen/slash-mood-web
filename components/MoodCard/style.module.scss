@@ -13,7 +13,7 @@
 .card {
   position: relative;
   display: inline-flex;
-  align-content: center;
+  align-items: center;
   border: 1.8px solid #A5A5A5;
   box-shadow: 2px 1px 4px rgba(#A5A5A5, 0.25), 1px 2px 8px rgba(#A5A5A5, 0.1);
   border-radius: 16px;
@@ -66,6 +66,7 @@
   &.loading {
     height: $font-size;
     width: 120px;
+    margin-block-end: 8px;
     background-color: color(gray-light);
   }
 }
@@ -80,8 +81,12 @@
 
   &.loading {
     background-color: color(gray-light);
-    height: 1.6rem;
-    width: 40px;
+    height: 20px;
+    width: 24px;
+
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
   }
 };
 

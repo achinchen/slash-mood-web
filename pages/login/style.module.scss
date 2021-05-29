@@ -16,7 +16,7 @@
   margin: 20px 0 0 8px;
   color: red;
 
-  &[hidden] {
+  &[aria-hidden=true] {
     opacity: 0;
   }
 }

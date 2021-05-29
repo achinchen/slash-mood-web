@@ -1,9 +1,9 @@
 import { useState, useRef, useMemo, useEffect, Fragment } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useQuery } from 'react-query';
+import Router from 'next/router';
+import useFetch from 'hooks/useFetch';
 import useEmail from 'hooks/useEmail';
-import query from 'utils/query';
 import Layout from 'components/Layout/Account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
@@ -54,22 +54,16 @@ function SignUp(): JSX.Element {
     [email, password, nickname]
   );
 
-  const { isLoading, refetch } = useQuery(
-    'signup',
-    query('/signup', { method: 'POST', payload }),
-    {
-      enabled: false,
-      retry: false,
-      onError: ({ status }) => {
-        if (status === 409) duplicatedEmailHelper();
-
-        // TODO: handle other validation error;
-      },
-      onSuccess: () => window.location.assign('/mood')
+  const { loading, fetcher } = useFetch({
+    fetchArgs: ['signup', { method: 'POST', payload }],
+    onSuccess: () => Router.replace('/mood'),
+    onError: ({ status }) => {
+      if (status === 409) duplicatedEmailHelper();
+      // TODO: handle other validation error;
     }
-  );
+  });
 
-  const onSubmit = () => refetch();
+  const onSubmit = () => fetcher();
 
   useEffect(() => {
     window['onLoadRecaptcha'] = () => {
@@ -134,9 +128,10 @@ function SignUp(): JSX.Element {
         <footer className={styles.bottom}>
           <Button
             color="dark"
+            size="lg"
             fullwidth
             onClick={onSubmit}
-            disabled={!passValidation || isLoading}
+            disabled={!passValidation || loading}
           >
             註冊
           </Button>
