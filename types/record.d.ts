@@ -6,6 +6,7 @@ export type Record = {
   mood: Mood;
   description: string;
   createdTime: string;
+  updatedTime: string;
 };
 
 export type PaginationResult = {
