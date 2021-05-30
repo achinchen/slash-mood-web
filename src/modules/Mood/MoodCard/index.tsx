@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import Link from 'next/link';
 import cx from 'clsx';
 import useFetch from 'hooks/useFetch';
 import Emoji from 'components/Emoji';
@@ -8,12 +7,12 @@ import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
 import YesNoDialog from 'components/YesNoDialog';
 import EditMood from './EditMood';
 import { getDateTime } from 'utils/dateString';
-import type { Record } from 'types/record';
+import type { MoodRecord } from 'types/record';
 import styles from './style.module.scss';
 
 type Props = {
-  onUpdate: (updatedRecord?: Record) => void;
-} & Record;
+  onUpdate: (updatedRecord?: MoodRecord) => void;
+} & MoodRecord;
 
 const MoodCard: FC<Props> = ({
   id,
@@ -97,13 +96,6 @@ export const LoadingMoodCard = (): JSX.Element => (
         />
       ))}
     </p>
-  </section>
-);
-
-export const WithoutMoodCard = (): JSX.Element => (
-  <section className={styles.withoutCard}>
-    <Emoji emoji="😆" aria-label="There is no mood record!" />
-    還沒有任何心情紀錄唷， 點這裡<Link href="/mood/create">開始紀錄心情</Link>
   </section>
 );
 

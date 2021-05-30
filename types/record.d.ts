@@ -1,6 +1,6 @@
 import type { Category, Mood } from './mood';
 
-export type Record = {
+export type MoodRecord = {
   id: number;
   categories: Category[];
   mood: Mood;
@@ -9,9 +9,7 @@ export type Record = {
   updatedTime: string;
 };
 
-export type PaginationResult = {
-  page: number;
-  nextPage: null | number;
-  prevPage: null | number;
+export type MoodRecordsResponse = {
+  records: MoodRecord[];
+  hasNext: boolean;
 };
-

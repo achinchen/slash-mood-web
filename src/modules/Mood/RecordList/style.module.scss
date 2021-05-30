@@ -1,0 +1,14 @@
+@import '~styles/common.scss';
+
+.main {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  margin-top: 24px;
+  font-size: 1.6rem;
+
+  @include media(landscape) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
