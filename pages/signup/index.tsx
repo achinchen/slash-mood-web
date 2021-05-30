@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Router from 'next/router';
 import useFetch from 'hooks/useFetch';
 import useEmail from 'hooks/useEmail';
-import Layout from 'components/Layout/Account';
+import Layout from 'layouts/account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
 import styles from './style.module.scss';

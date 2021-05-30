@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import Link from 'next/link';
-import Layout from 'components/Layout/Account';
+import Layout from 'layouts/account';
 import Button from 'components/Button';
 import TextInput from 'components/TextInput';
 import styles from './style.module.scss';

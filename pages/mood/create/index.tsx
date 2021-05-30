@@ -1,7 +1,7 @@
 import { useState, Fragment, ChangeEvent } from 'react';
 import cx from 'clsx';
 import { MOODS_MAP, MOODS, CATEGORIES_MAP, CATEGORIES } from 'constants/mood';
-import BasicHead from 'seo/Head';
+import BasicHead from 'src/heads/Head';
 import useFetch from 'hooks/useFetch';
 import useMood from 'hooks/useMood';
 import Button from 'components/Button';

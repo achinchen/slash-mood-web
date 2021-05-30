@@ -1,4 +1,4 @@
-import { Category, Mood } from './mood';
+import type { Category, Mood } from './mood';
 
 export type Record = {
   id: number;

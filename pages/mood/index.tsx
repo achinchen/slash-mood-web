@@ -3,13 +3,13 @@ import type { NextPage } from 'next';
 import type { Record } from 'types/record';
 import { useSWRInfinite } from 'swr';
 import fetch from 'libs/fetch';
-import BasicHead from 'seo/Head';
+import BasicHead from 'src/heads/Head';
 import Emoji from 'components/Emoji';
 import useIntersectionObserver from 'hooks/useIntersectionObserver';
 import MoodCard, {
   LoadingMoodCard,
   WithoutMoodCard
-} from 'views/Mood/MoodCard';
+} from 'src/modules/Mood/MoodCard';
 import styles from './style.module.scss';
 import Link from 'next/link';
 

@@ -19,6 +19,18 @@
     "target": "esnext",
     "typeRoots": ["node_modules/@types", "types"],
     "baseUrl": ".",
+    "paths": {
+      "components/*": [ "src/components/*" ],
+      "contexts/*": [ "src/contexts/*" ],
+      "constants/*": [ "src/constants/*" ],
+      "hooks/*": [ "src/hooks/*" ],
+      "modules/*": [ "src/modules/*" ],
+      "layouts/*": [ "src/layouts/*" ],
+      "libs/*": [ "src/libs/*" ],
+      "heads/*": [ "src/heads/*" ],
+      "styles/*": [ "src/styles/*" ],
+      "utils/*": [ "src/utils/*" ]
+    },
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx"]

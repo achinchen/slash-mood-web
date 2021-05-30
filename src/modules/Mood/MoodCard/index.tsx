@@ -7,7 +7,7 @@ import Menu from 'components/Menu';
 import { MOODS_MAP, CATEGORIES_MAP } from 'constants/mood';
 import YesNoDialog from 'components/YesNoDialog';
 import EditMood from './EditMood';
-import { getDateTime } from 'utils';
+import { getDateTime } from 'utils/dateString';
 import type { Record } from 'types/record';
 import styles from './style.module.scss';
 
