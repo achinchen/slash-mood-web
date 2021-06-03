@@ -41,7 +41,10 @@ const Modal: FC<Props> = ({
   };
 
   useESC({ onClose: triggerClose });
-  useActiveClose({ onClose: triggerClose, enabled: isActiveClose });
+  useActiveClose({
+    onClose: triggerClose,
+    enabled: isActiveClose
+  });
   const target = usePortal({ closed: isClosed });
 
   return ReactDom.createPortal(
