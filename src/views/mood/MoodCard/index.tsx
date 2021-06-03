@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import cx from 'clsx';
 import useFetch from 'hooks/useFetch';
 import Emoji from 'components/Emoji';
 import Menu from 'components/Menu';
@@ -78,25 +77,11 @@ const MoodCard: FC<Props> = ({
           categories={categories}
           description={description}
           onUpdate={onUpdate}
+          updatedTime={updatedTime}
         />
       )}
     </>
   );
 };
-
-export const LoadingMoodCard = (): JSX.Element => (
-  <section className={cx(styles.card, styles.loading)}>
-    <img className={styles.mood} src="/images/mood/loading.svg" alt="載入中" />
-    <p className={styles.text}>
-      <time className={cx(styles.time, styles.loading)} />
-      {Array.from({ length: 3 }).map((_, categoryIndex) => (
-        <span
-          className={cx(styles.tag, styles.loading)}
-          key={`loading-${categoryIndex}`}
-        />
-      ))}
-    </p>
-  </section>
-);
 
 export default MoodCard;

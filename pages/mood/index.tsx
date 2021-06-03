@@ -1,15 +1,12 @@
 import type { NextPage } from 'next';
-import dynamic from 'next/dynamic';
 import type { MoodRecordsResponse } from 'types/record';
+import RecordList from 'modules/mood/RecordList';
 import fetch from 'libs/fetch';
 import Head from 'heads/Head';
 import GreetingHeader from 'modules/mood/GreetingHeader';
 import styles from './style.module.scss';
 
 type Props = { initialData?: MoodRecordsResponse };
-const RecordList = dynamic(() => import('modules/mood/RecordList'), {
-  ssr: false
-});
 
 const Mood: NextPage<Props> = ({ initialData }) => (
   <div className={styles.container}>
