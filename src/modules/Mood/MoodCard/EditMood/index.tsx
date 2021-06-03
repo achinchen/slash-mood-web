@@ -1,7 +1,7 @@
 import { FC, ChangeEvent } from 'react';
 import cx from 'clsx';
 import useFetch from 'hooks/useFetch';
-import type { Record } from 'types/record';
+import type { MoodRecord } from 'types/record';
 import Modal from 'components/Modal';
 import Button from 'components/Button';
 import TextArea from 'components/TextArea';
@@ -12,8 +12,8 @@ import styles from './style.module.scss';
 
 type Props = {
   close?: () => void;
-  onUpdate: (record: Record) => void;
-} & Omit<Omit<Record, 'createdTime'>, 'updatedTime'>;
+  onUpdate: (record: MoodRecord) => void;
+} & Omit<MoodRecord, 'createdTime'>;
 
 const EditMood: FC<Props> = ({ onUpdate, close, id, ...payload }) => {
   const {
@@ -38,7 +38,7 @@ const EditMood: FC<Props> = ({ onUpdate, close, id, ...payload }) => {
       }
     ],
     onSuccess: (record) => {
-      onUpdate(record as Record);
+      onUpdate(record as MoodRecord);
       close?.();
     }
   });
